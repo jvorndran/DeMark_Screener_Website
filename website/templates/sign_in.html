@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication</title>
+  <script>
+  function checkVal(event){
+
+      event.preventDefault();
+
+      let code = document.getElementById("code").value;
+      if (code == 1234){
+          location.href = "/screener";
+      }
+      else{
+          alert("Wrong Code");
+      }
+
+  }
+
+  </script>
+
+  <style>
+    body {
+      background-color: black;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      margin-top: 100px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"] {
+      width: 95%;
+      padding: 7px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      text-align: center;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Authentication</h1>
+    <form>
+      <div class="form-group">
+        <label for="code">Enter Code:</label>
+        <input type="text" id="code" name="code" placeholder="Code">
+      </div>
+      <button type="submit" class="btn" onclick="checkVal(event)">Submit</button>
+    </form>
+  </div>
+</body>
+
+</html>

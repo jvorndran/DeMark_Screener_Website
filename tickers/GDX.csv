@@ -1,0 +1,50 @@
+Number,Ticker,Name,Identifier (FIGI),Shares,Asset Class,Market Value $),Notional Value,% of Net Assets
+1,NEM,Newmont Corp,BBG000BPWXK1,"28,206,578",Stock,"$1,184,394,210.22", -- ,9.16%
+2,GOLD,Barrick Gold Corp,BBG000BB07P9,"62,610,804",Stock,"$1,072,523,072.52", -- ,8.29%
+3,FNV,Franco-Nevada Corp,BBG000RD3CL8,"6,810,404",Stock,"$1,007,054,439.48", -- ,7.79%
+4,AEM,Agnico Eagle Mines Ltd,BBG000DLVDK3,"18,217,663",Stock,"$947,682,829.26", -- ,7.33%
+5,GFI,Gold Fields Ltd,BBG000KHT4K7,"50,283,844",Stock,"$786,439,320.16", -- ,6.08%
+6,WPM,Wheaton Preci Metals Corp,BBG000PVRDL2,"16,061,717",Stock,"$740,445,153.70", -- ,5.73%
+7,NCM.AX,Newcrest Mining Ltd,BBG000BQKN15,"35,929,587",Stock,"$630,449,763.39", -- ,4.88%
+8,NST.AX,Northern Star Resources Ltd,BBG000C82NF9,"64,713,949",Stock,"$585,697,256.73", -- ,4.53%
+9,ANG.JO,Anglogold Ashanti Ltd,BBG000BCMDR8,"23,569,545",Stock,"$579,810,807.00", -- ,4.48%
+10,2899.HK,Zijin Mining Group Co Ltd,BBG000DCTP29,"322,642,000",Stock,"$474,649,453.46", -- ,3.67%
+11,RGLD,Royal Gold Inc,BBG000BS5170,"3,694,257",Stock,"$452,842,023.06", -- ,3.50%
+12,EDV.TO,Endeavour Mining Plc,BBG011FJG0D6,"13,931,095",Stock,"$362,597,969.39", -- ,2.80%
+13,KGC,Kinross Gold Corp,BBG000BB2DM7,"70,682,196",Stock,"$342,101,828.64", -- ,2.65%
+14,PAAS,Pan American Silver Corp,BBG000C0RGY3,"20,425,173",Stock,"$318,632,698.80", -- ,2.46%
+15,AGI,Alamos Gold Inc,BBG009HT6BL4,"22,142,049",Stock,"$278,546,976.42", -- ,2.15%
+16,EVN.AX,Evolution Mining Ltd,BBG000NF2249,"103,266,744",Stock,"$242,372,572.72", -- ,1.87%
+17,BTG,B2gold Corp,BBG000V9KFD5,"60,471,994",Stock,"$231,607,737.02", -- ,1.79%
+18,1818.HK,Zhaojin Mining Industry Co Ltd,BBG000DQ77W9,"146,831,000",Stock,"$208,516,345.89", -- ,1.61%
+19,HL,Hecla Mining Co,BBG000BL5W86,"34,205,630",Stock,"$185,394,514.60", -- ,1.43%
+20,SSRM,Ssr Mining Inc,BBG000C0RWX9,"11,635,805",Stock,"$172,326,272.05", -- ,1.33%
+21,OR,Osisko Gold Royalties Ltd,BBG006NTSJ78,"10,365,298",Stock,"$167,399,562.70", -- ,1.29%
+22,HMY,Harmony Gold Mining Co Ltd,BBG000BX93G1,"34,782,380",Stock,"$158,955,476.60", -- ,1.23%
+23,EGO,Eldorado Gold Corp,BBG000BN7277,"10,395,723",Stock,"$102,293,914.32", -- ,0.79%
+24,BVN,Cia De Minas Buenaventura Saa,BBG000GPXR82,"14,277,965",Stock,"$98,660,738.15", -- ,0.76%
+25,PRU.AX,Pers Mining Ltd,BBG000Q68231,"76,954,831",Stock,"$96,980,145.74", -- ,0.75%
+26,SAND,Sandstorm Gold Ltd,BBG000VMKS48,"16,780,187",Stock,"$90,948,613.54", -- ,0.70%
+27,AG,First Majestic Silver Corp,BBG000CH7WB8,"14,938,918",Stock,"$87,542,059.48", -- ,0.68%
+28,OGC.TO,Oceanagold Corp,BBG000RG1PM3,"39,629,851",Stock,"$86,868,042.45", -- ,0.67%
+29,EQX,Equinox Gold Corp,BBG004XB7MN9,"17,297,175",Stock,"$85,102,101.00", -- ,0.66%
+30,IAG,Iamgold Corp,BBG000LL9LQ5,"26,955,961",Stock,"$81,137,442.61", -- ,0.63%
+31,CEY.LN,Centamin Plc,BBG000D32QC5,"65,080,046",Stock,"$80,108,555.77", -- ,0.62%
+32,TXG.TO,Torex Gold Resources Inc,BBG000BSWRQ2,"4,830,951",Stock,"$79,888,531.73", -- ,0.62%
+33,DPM.TO,Dundee Preci Metals Inc,BBG000G9HTM6,"10,692,365",Stock,"$77,248,102.03", -- ,0.60%
+34,CG.TO,Centerra Gold Inc,BBG000PWGV23,"12,400,601",Stock,"$75,258,819.86", -- ,0.58%
+35,GOR.AX,Gold Road Resources Ltd,BBG000PK8TF9,"60,658,682",Stock,"$74,693,557.27", -- ,0.58%
+36,CMM.AX,Capricorn Metals Ltd,BBG000C0X7Y6,"21,146,032",Stock,"$61,746,583.61", -- ,0.48%
+37,RRL.AX,Regis Resources Ltd,BBG000BLX2J9,"42,489,555",Stock,"$59,695,032.19", -- ,0.46%
+38,DRD,Drdgold Ltd,BBG000BX8QF2,"4,865,646",Stock,"$58,728,347.22", -- ,0.45%
+39,KNT.TO,K92 Mining Inc,BBG0018BVXB5,"13,111,964",Stock,"$58,069,014.84", -- ,0.45%
+40,FSM,Fortuna Silver Mines Inc,BBG000LDZ482,"16,330,058",Stock,"$57,971,705.90", -- ,0.45%
+41,SILV,Silvercrest Metals Inc,BBG00B9JN9J9,"8,244,297",Stock,"$53,423,044.56", -- ,0.41%
+42,CDE,Coeur Mining Inc,BBG000BF8TF5,"16,637,645",Stock,"$51,576,699.50", -- ,0.40%
+43,NGD,New Gold Inc,BBG000KD2ZL5,"38,395,528",Stock,"$46,842,544.16", -- ,0.36%
+44,WDO.TO,Wesdome Gold Mines Ltd/Canada,BBG000DKQDS3,"8,018,694",Stock,"$46,752,050.01", -- ,0.36%
+45,AYA.TO,Aya Gold & Silver Inc,BBG000FTVZM3,"5,909,224",Stock,"$43,176,436.31", -- ,0.33%
+46,SLR.AX,Silver Lake Resources Ltd,BBG000DGM5W8,"52,321,895",Stock,"$36,717,986.44", -- ,0.28%
+47,EXK,Endeavour Silver Corp,BBG000K2HB18,"10,691,739",Stock,"$33,999,730.02", -- ,0.26%
+48,WAF.AX,West African Resources Ltd,BBG000R17C94,"57,599,140",Stock,"$33,589,556.65", -- ,0.26%
+

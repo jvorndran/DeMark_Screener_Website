@@ -1,0 +1,37 @@
+Fund Ticker,Security Identifier,Ticker,Shares/Par Value,MarketValue,Weight,Name,Class of Shares,Sector,Date
+PHO,278865100,ECL ,"913,715","161,709,280.70",8.983,Ecolab Inc,Common Stock,Materials,06/08/2023
+PHO,98419M100,XYL ,"1,418,707","154,709,998.35",8.594,Xylem Inc/NY,Common Stock,Industrials,06/08/2023
+PHO,776696106,ROP ,"338,487","153,070,591.14",8.503,Roper Technologies Inc,Common Stock,Information Technology,06/08/2023
+PHO,G3421J106,FERG ,"1,010,615","146,407,795.05",8.133,Ferguson PLC,Common Stock,Industrials,06/08/2023
+PHO,235851102,DHR ,"588,310","138,494,057.10",7.693,Danaher Corp,Common Stock,Health Care,06/08/2023
+PHO,00790R104,WMS ,"820,512","88,221,450.24",4.901,Advanced Drainage Systems Inc,Common Stock,Industrials,06/08/2023
+PHO,G7S00T104,PNR ,"1,301,513","77,947,613.57",4.330,Pentair PLC,Common Stock,Industrials,06/08/2023
+PHO,831865209,AOS ,"1,109,342","77,365,511.08",4.298,A O Smith Corp,Common Stock,Industrials,06/08/2023
+PHO,030420103,AWK ,"518,634","76,301,434.08",4.238,American Water Works Co Inc,Common Stock,Utilities,06/08/2023
+PHO,45167R104,IEX ,"323,645","67,136,918.80",3.729,IDEX Corp,Common Stock,Industrials,06/08/2023
+PHO,29670G102,WTRG ,"1,530,056","64,139,947.52",3.563,Essential Utilities Inc,Common Stock,Utilities,06/08/2023
+PHO,891092108,TTC ,"659,306","63,972,461.18",3.554,Toro Co/The,Common Stock,Industrials,06/08/2023
+PHO,88162G103,TTEK ,"377,413","59,461,418.15",3.303,Tetra Tech Inc,Common Stock,Industrials,06/08/2023
+PHO,941848103,WAT ,"234,203","58,541,381.88",3.252,Waters Corp,Common Stock,Health Care,06/08/2023
+PHO,784305104,SJW ,"666,184","50,550,041.92",2.808,SJW Group,Common Stock,Utilities,06/08/2023
+PHO,98983L108,ZWS ,"1,797,494","46,015,846.40",2.556,Zurn Elkay Water Solutions Corp,Common Stock,Industrials,06/08/2023
+PHO,920253101,VMI ,"150,657","42,319,551.30",2.351,Valmont Industries Inc,Common Stock,Industrials,06/08/2023
+PHO,20441A102,SBS ,"3,197,454","35,012,121.30",1.945,Cia de Saneamento Basico do Estado de Sao Paulo SABESP ADR,American Depository Receipt,Utilities,06/08/2023
+PHO,624756102,MLI ,"395,357","33,573,716.44",1.865,Mueller Industries Inc,Common Stock,Industrials,06/08/2023
+PHO,942749102,WTS ,"148,058","26,031,557.56",1.446,Watts Water Technologies Inc,Common Stock,Industrials,06/08/2023
+PHO,056525108,BMI ,"167,663","25,322,142.89",1.407,Badger Meter Inc,Common Stock,Information Technology,06/08/2023
+PHO,465741106,ITRI ,"318,364","23,132,328.24",1.285,Itron Inc,Common Stock,Information Technology,06/08/2023
+PHO,029899101,AWR ,"229,289","20,892,813.68",1.161,American States Water Co,Common Stock,Utilities,06/08/2023
+PHO,596680108,MSEX ,"247,324","20,720,804.72",1.151,Middlesex Water Co,Common Stock,Utilities,06/08/2023
+PHO,353514102,FELE ,"183,545","18,009,435.40",1.000,Franklin Electric Co Inc,Common Stock,Industrials,06/08/2023
+PHO,130788102,CWT ,"291,040","16,606,742.40",0.922,California Water Service Group,Common Stock,Utilities,06/08/2023
+PHO,535555106,LNN ,"125,633","15,833,526.99",0.880,Lindsay Corp,Common Stock,Industrials,06/08/2023
+PHO,624758108,MWA ,"891,740","13,697,126.40",0.761,Mueller Water Products Inc,Common Stock,Industrials,06/08/2023
+PHO,29270J100,ERII ,"382,030","10,314,810.00",0.573,Energy Recovery Inc,Common Stock,Industrials,06/08/2023
+PHO,85472N109,STN ,"65,595","4,077,385.20",0.226,Stantec Inc,Common Stock,Industrials,06/08/2023
+PHO,043113208,ARTNA ,"62,796","3,157,382.88",0.175,Artesian Resources Corp,Common Stock,Utilities,06/08/2023
+PHO,987184108,YORW ,"55,178","2,496,252.72",0.139,York Water Co/The,Common Stock,Utilities,06/08/2023
+PHO,383082104,GRC ,"76,080","2,045,791.20",0.114,Gorman-Rupp Co/The,Common Stock,Industrials,06/08/2023
+PHO,667746101,NWPX ,"43,639","1,296,078.30",0.072,Northwest Pipe Co,Common Stock,Industrials,06/08/2023
+PHO,379463102,GWRS ,"38,234","464,543.10",0.026,Global Water Resources Inc,Common Stock,Utilities,06/08/2023
+

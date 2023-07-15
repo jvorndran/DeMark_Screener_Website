@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "yahoo-finance-api": "^0.2.1"
+  }
+}

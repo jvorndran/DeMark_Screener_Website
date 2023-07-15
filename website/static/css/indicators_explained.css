@@ -1,0 +1,80 @@
+@import url('https://fonts.cdnfonts.com/css/typold');
+
+body{
+    background-image:  linear-gradient(0deg, #000000 31%, #444444 100%);
+    font-family: Typold, serif;
+    font-weight: 255;
+    color: white;
+    padding: 0;
+    margin: 0;
+}
+
+section{
+    display: grid;
+    place-items: center;
+    align-content: start;
+    min-height: 105vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
+}
+
+.hidden {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateX(-100%);
+    transition: all 1s;
+}
+
+.show {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+}
+
+p{
+    font-size: 1.5em;
+}
+
+h4{
+    font-size: 1.5em;
+}
+h1{
+    font-size: 1.8em;
+}
+
+img{
+    border-radius: 3%;
+    width: 100%;
+    height: 100%
+}
+
+.grid-left{
+    display: grid;
+    grid-template-columns: 35% 65%;
+    justify-content: space-evenly;
+    column-gap: 5vw;
+    margin-top: 5vw;
+    margin-left: 5vw;
+    margin-right: 5vw;
+}
+
+.grid-right{
+    display: grid;
+    grid-template-columns: 65% 35%;
+    justify-content: space-evenly;
+    column-gap: 5vw;
+    margin-top: 5vw;
+    margin-left: 5vw;
+    margin-right: 5vw;
+}
+
+
+.image-right {
+    text-align: end;
+    padding-right: 5vw;
+}
+
+.image-left {
+    text-align: start;
+    padding-left: 5vw;
+}

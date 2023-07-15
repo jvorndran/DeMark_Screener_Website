@@ -1,0 +1,26 @@
+Number,Ticker,Name,Identifier (FIGI),Shares,Asset Class,Market Value $),Notional Value,% of Net Assets
+1,AKE.AX,Allkem Ltd,BBG000TT96V7,"4,791,808",Stock,"$49,879,575.05", -- ,8.04%
+2,PLS.AX,Pilbara Minerals Ltd,BBG000RLN524,"15,254,672",Stock,"$48,936,849.19", -- ,7.89%
+3,LTR.AX,Liontown Resources Ltd,BBG000F21113,"24,819,109",Stock,"$46,132,154.36", -- ,7.44%
+4,600111.SS,China Northern Rare Earth Group High-Te,BBG00709HF84,"12,103,912",Stock,"$39,857,172.95", -- ,6.42%
+5,LYC.AX,Lynas Rare Earths Ltd,BBG000BSCDH5,"7,313,680",Stock,"$38,431,875.79", -- ,6.19%
+6,603799.SS,Zhejiang Huayou Cobalt Co Ltd,BBG00JCQD422,"5,734,100",Stock,"$38,075,556.59", -- ,6.14%
+7,LTHM,Livent Corp,BBG00LV3NRG0,"1,256,646",Stock,"$32,974,391.04", -- ,5.31%
+8,SGML,Sigma Lithium Corp,BBG00L95H2Y2,"750,049",Stock,"$31,153,285.22", -- ,5.02%
+9,ILU.AX,Iluka Resources Ltd,BBG000C13PJ4,"3,630,264",Stock,"$28,313,357.81", -- ,4.56%
+10,LAC,Lithium Americas Corp,BBG000BGM5P8,"1,329,314",Stock,"$27,968,766.56", -- ,4.51%
+11,1772.HK,Ganfeng Lithium Group Co Ltd,BBG00L9ZZS33,"3,830,040",Stock,"$26,423,859.38", -- ,4.26%
+12,AMG.AS,Amg Critical Materials Nv,BBG000RLBF52,"477,649",Stock,"$23,668,849.08", -- ,3.81%
+13,600549.SS,Xiamen Tungsten Co Ltd,BBG00709HVP0,"8,781,424",Stock,"$23,009,801.84", -- ,3.71%
+14,MP,Mp Materials Corp,BBG00TJGL0F0,"1,018,841",Stock,"$22,597,893.38", -- ,3.64%
+15,600392.SS,Shenghe Resources Holding Co Ltd,BBG00L1KMZR6,"12,549,087",Stock,"$22,416,413.65", -- ,3.61%
+16,CXO.AX,Core Lithium Ltd,BBG001968H71,"25,623,918",Stock,"$18,401,458.28", -- ,2.97%
+17,ERAP.XD,Eramet Sa,BBG000CBQ8H7,"152,120",Stock,"$14,539,408.91", -- ,2.34%
+18,PLL,Piedmont Lithium Inc,BBG00YJ7NBQ1,"225,504",Stock,"$14,051,154.24", -- ,2.26%
+19,TROX,Tronox Holdings Plc,BBG00MRH2W10,"1,089,760",Stock,"$13,349,560.00", -- ,2.15%
+20,SYA.AX,Sayona Mining Ltd,BBG000KHRDT0,"103,498,760",Stock,"$12,668,994.98", -- ,2.04%
+21,AVZ.AX,Avz Minerals Ltd,BBG000GDY0D1,"52,906,510",Stock,"$12,420,468.14", -- ,2.00%
+22,9696.HK,Tianqi Lithium Corp,BBG018KZQ6K7,"1,615,800",Stock,"$11,143,881.31", -- ,1.80%
+23,SLI,Standard Lithium Ltd,BBG00GNRHX08,"2,264,530",Stock,"$10,484,773.90", -- ,1.69%
+24,LKE.AX,Lake Resources Nl,BBG000DJPDF1,"20,866,099",Stock,"$6,939,271.00", -- ,1.12%
+25,INR.AX,Ioneer Ltd,BBG000TS1VS6,"24,976,430",Stock,"$5,673,518.94", -- ,0.91%

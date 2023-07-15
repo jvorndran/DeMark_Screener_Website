@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ ticker }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+
+
+    <style>
+        #chart {
+            width: 73%;
+            height: 610px;
+            padding-right: 20px;
+            margin-bottom: 20px;
+            margin-left: 10px;
+            background: linear-gradient(to bottom, rgb(166, 166, 166), rgb(255, 255, 255));
+            border-radius: 8px;
+        }
+
+        p{
+            font-size: 14px;
+        }
+
+        h4{
+            font-size: 18px;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+        td{
+            font-size: 14px;
+        }
+        th, td {
+          text-align: left;
+          padding: 8px;
+          border-bottom: 1px solid #ddd;
+        }
+        th {
+            font-size: 16px;
+          background-color: #f2f2f2;
+        }
+        .table-number{
+            text-align: center;
+        }
+        body{
+            background-image: url("../static/pictures/AdobeStock_139346268.jpeg");
+            background-size: cover;
+            background-position: center;
+        }
+
+    </style>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            let price_data = JSON.parse('{{ price_data | safe }}');
+
+            const bars = Object.entries(price_data).map(([timestamp, data]) => {
+            return {
+              time: data.Date,
+              open: data.Open,
+              high: data.High,
+              low: data.Low,
+              close: data.Close
+            };
+          });
+
+          const chartElement = document.getElementById('chart');
+
+          const gradientColors = [
+            { color: '#ffffff', position: 0 },
+            { color: '#5D5C61', position: 1 }
+          ];
+
+          const chart = LightweightCharts.createChart(chartElement, {
+              width: chartElement.offsetWidth,
+                height: chartElement.offsetHeight,
+                layout: {
+                  upColor: '#d4d4d4',
+                  downColor: '#5D5C61',
+                  background: { color: 'rgba(34,34,34,0)'},
+                  textColor: '#000000',
+                },
+              grid: {
+                vertLines: { color: 'rgba(52,52,52,0.2)' },
+                horzLines: { color: 'rgba(52,52,52,0.2)' },
+            },
+          });
+
+          chart.priceScale().applyOptions({
+                borderColor: '#71649C',
+                textColor: '#000000'
+            });
+
+            chart.timeScale().applyOptions({
+                borderColor: '#71649C',
+            });
+
+          const candlestickSeries = chart.addCandlestickSeries();
+
+          candlestickSeries.setData(bars);
+          {##}
+          {#candlestickSeries.applyOptions({#}
+          {#    wickUpColor: '#00ffff',#}
+          {#  upColor: '#00ffff',#}
+          {#  wickDownColor: '#ec0a0a',#}
+          {#  downColor: '#ff0000',#}
+          {#  borderVisible: false,#}
+          {# });#}
+          {##}
+          {#    #}
+          {#    #}
+
+        });
+    </script>
+
+
+
+</head>
+<body>
+    <br>
+<div class="container-fluid" id="background" style="opacity: 0.80">
+  <div class="row">
+
+    <div id="chart" class="bg-image"></div>
+
+    <div class="col-sm-3" style="margin-left: 23px">
+        <div class="well">
+            <h1>{{ quote[ticker].longName }} ({{ ticker }})</h1>
+            <hr>
+            <h4 style="font-size: 16px">Family: {{ profile[ticker].family }}</h4>
+            <h4 style="font-size: 16px">Category: {{ profile[ticker].categoryName }}</h4>
+            <hr>
+            <table>
+                <tr>
+                    <td>Sequential Buy Count Daily:</td>
+                    <td class="table-number">{{ demark_counts.seq_buy_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Buy Count Daily</td>
+                    <td class="table-number">{{ demark_counts.combo_buy_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Sequential Buy Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.seq_buy_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Buy Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.combo_buy_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Buy 9-13-9 Sequential</td>
+                    <td class="table-number">{{ 'True' if demark_counts.seq_buy_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+                <tr>
+                    <td>Buy 9-13-9 Combo</td>
+                    <td class="table-number">{{ 'True' if demark_counts.combo_buy_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+                <tr>
+                    <td>Sequential Sell Count Daily</td>
+                    <td class="table-number">{{ demark_counts.seq_sell_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Sell Count Daily</td>
+                    <td class="table-number">{{ demark_counts.combo_sell_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Sequential Sell Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.seq_sell_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Sell Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.combo_sell_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Sell 9-13-9 Sequential</td>
+                    <td class="table-number">{{ 'True' if demark_counts.seq_sell_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+                <tr>
+                    <td>Sell 9-13-9 Combo</td>
+                    <td class="table-number">{{ 'True' if demark_counts.combo_sell_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="col-sm-7">
+      <div class="well">
+          <h4>About</h4>
+          <hr>
+          <p>{{ summary[ticker].longBusinessSummary }}</p>
+      </div>
+
+
+      <div class="row">
+
+        <div class="col-sm-4">
+          <div class="well">
+            <h4>General</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Expense Ratio</td>
+                      <td>{{ (profile[ticker].feesExpensesInvestment.annualReportExpenseRatio * 100)|round(2) }}%</td>
+                  </tr>
+                  <tr>
+                      <td>Annual Holdings Turnover</td>
+                      <td>{{ (profile[ticker].feesExpensesInvestment.annualHoldingsTurnover * 100)|round(1) }}%</td>
+                  </tr>
+                  <tr>
+                      <td>Net Assets Under Management</td>
+                      <td>{{ profile[ticker].feesExpensesInvestment.totalNetAssets|round(2) }}M</td>
+                  </tr>
+                  <tr>
+                      <td>Sharpe Ratio</td>
+                      <td>{{ performance[ticker].riskOverviewStatistics.riskStatistics[0].sharpeRatio }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="well">
+            <h4>Risk Statistics (5yr)</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Alpha</td>
+                      <td>{{ performance[ticker].riskOverviewStatistics.riskStatistics[0].alpha }}</td>
+                  </tr>
+                  <tr>
+                      <td>Beta</td>
+                      <td>{{ performance[ticker].riskOverviewStatistics.riskStatistics[0].beta }}</td>
+                  </tr>
+                  <tr>
+                      <td>Mean Annual Return</td>
+                      <td>{{ performance[ticker].riskOverviewStatistics.riskStatistics[0].meanAnnualReturn }}</td>
+                  </tr>
+                  <tr>
+                      <td>Treynor Ratio</td>
+                      <td>{{ performance[ticker].riskOverviewStatistics.riskStatistics[0].treynorRatio }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+          <div class="col-sm-4">
+          <div class="well">
+                <table>
+                    <tr>
+                        <th>Period</th>
+                        <th>Return</th>
+                    </tr>
+                    <tr>
+                        <td>Year To Date</td>
+                        <td>{{ (performance[ticker].trailingReturnsNav.ytd * 100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>One Month</td>
+                        <td>{{ (performance[ticker].trailingReturnsNav.oneMonth * 100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Three Month</td>
+                        <td>{{ (performance[ticker].trailingReturnsNav.threeMonth * 100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>One Year</td>
+                        <td>{{ (performance[ticker].trailingReturnsNav.oneYear * 100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Three Year</td>
+                        <td>{{ (performance[ticker].trailingReturnsNav.threeYear * 100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Five Year</td>
+                        <td>{{ (performance[ticker].trailingReturnsNav.fiveYear * 100)|round(1) }}%</td>
+                    </tr>
+                </table>
+          </div>
+      </div>
+      </div>
+
+
+    </div>
+
+
+     <div class="col-sm-2">
+          <div class="well">
+              <table>
+                  {% if sector_weights %}
+                    <tr>
+                        <th>Sector</th>
+                        <th>Weighting</th>
+                    </tr>
+
+                    <tr>
+                        <td>Real Estate</td>
+                        <td>{{ (sector_weights[0][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Consumer Cyclical</td>
+                        <td>{{ (sector_weights[1][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Basic Materials</td>
+                        <td>{{ (sector_weights[2][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Consumer Defensive</td>
+                        <td>{{ (sector_weights[3][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Technology</td>
+                        <td>{{ (sector_weights[4][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Communication Services</td>
+                        <td>{{ (sector_weights[5][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Financial Services</td>
+                        <td>{{ (sector_weights[6][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Utilities</td>
+                        <td>{{ (sector_weights[7][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Industrials</td>
+                        <td>{{ (sector_weights[8][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Energy</td>
+                        <td>{{ (sector_weights[9][1]*100)|round(1) }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Healthcare</td>
+                        <td>{{ (sector_weights[10][1]*100)|round(1) }}%</td>
+                    </tr>
+                    {% else %}
+                      <tr>
+                        <td colspan="2">No sector weights available</td>
+                      </tr>
+                    {% endif %}
+                  </table>
+
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="well">
+                <table>
+                    <tr>
+                     <th>Symbol</th>
+                      <th>Holding Name</th>
+                      <th>Holding %</th>
+                    </tr>
+                    {% for holding in holding_info[ticker]['holdings'] %}
+                      <tr>
+                        <td>{{ holding['symbol'] }}</td>
+                        <td>{{ holding['holdingName'] }}</td>
+                        <td>{{ (holding['holdingPercent'] * 100)|round(1) }}%</td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+            </div>
+        </div>
+
+  </div>
+
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ company_info.longName }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <link rel="icon" type="image/png" sizes="32x32" href="https://logo.clearbit.com/{{ company_site }}?size=25">
+    <link href="../static/css/stock_info_style.css" rel="stylesheet">
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+        let price_data = JSON.parse('{{ price_data | safe }}');
+
+        const bars = Object.entries(price_data).map(([timestamp, data]) => {
+        return {
+          time: data.Date,
+          open: data.Open,
+          high: data.High,
+          low: data.Low,
+          close: data.Close
+        };
+      });
+
+      const chartElement = document.getElementById('chart');
+
+      const gradientColors = [
+        { color: '#ffffff', position: 0 },
+        { color: '#5D5C61', position: 1 }
+      ];
+
+      const chart = LightweightCharts.createChart(chartElement, {
+          width: chartElement.offsetWidth,
+            height: chartElement.offsetHeight,
+            layout: {
+              upColor: '#d4d4d4',
+              downColor: '#5D5C61',
+              background: { color: 'rgba(34,34,34,0)'},
+              textColor: '#000000',
+            },
+          grid: {
+            vertLines: { color: 'rgba(52,52,52,0.2)' },
+            horzLines: { color: 'rgba(52,52,52,0.2)' },
+        }
+      });
+
+      chart.priceScale().applyOptions({
+            borderColor: '#71649C',
+            textColor: '#000000'
+        });
+
+        chart.timeScale().applyOptions({
+            borderColor: '#71649C',
+        });
+
+      const candlestickSeries = chart.addCandlestickSeries();
+
+      candlestickSeries.setData(bars);
+
+      {#candlestickSeries.applyOptions({#}
+      {#    wickUpColor: '#f1f1f1',#}
+      {#  upColor: '#f1f1f1',#}
+      {#  wickDownColor: '#838383',#}
+      {#  downColor: '#838383',#}
+      {#  borderVisible: false,#}
+      {# });#}
+        });
+    </script>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+      //News
+
+        let news;
+
+        try {
+            news =  {{ news | safe }};
+        } catch (err){
+            console.error('Error Parsing News Data', err);
+            return;
+        }
+        let newsContainer = document.getElementById('news-container');
+
+        // Loop through the news list and generate HTML markup for each item
+        news.forEach(function(newsItem) {
+            // Create elements for title, image, and link
+            let titleElement = document.createElement('h1');
+            titleElement.textContent = newsItem.title;
+            titleElement.classList.add('news-title');
+
+            let imageElement = document.createElement('img');
+            imageElement.src = newsItem.thumbnail.resolutions[0].url;
+            imageElement.alt = 'Thumbnail';
+            imageElement.width = 400;
+            imageElement.height = 180;
+            imageElement.classList.add('news-image');
+
+            let linkElement = document.createElement('a');
+            linkElement.href = newsItem.link;
+            linkElement.appendChild(imageElement);
+            linkElement.target = '_blank'
+
+            let newsItemDiv = document.createElement('div');
+            newsItemDiv.classList.add('news-item');
+
+            newsItemDiv.appendChild(titleElement);
+            newsItemDiv.appendChild(linkElement);
+
+            newsContainer.appendChild(newsItemDiv);
+
+            let hrElement = document.createElement('hr');
+            newsContainer.appendChild(hrElement);
+        });
+
+    });
+
+
+
+    </script>
+
+
+</head>
+<body>
+
+<br>
+<div class="container-fluid" id="background" style="opacity: 0.80">
+  <div class="row">
+
+   <div id="chart" class="bg-image" style="opacity: 0.90;"></div>
+
+    <div class="col-sm-3" style="margin-left: 23px">
+        <div class="well">
+            <h1 style="font-size: 30px" class="h3">
+
+                {% if company_site %}
+                    <img src="https://logo.clearbit.com/{{ company_site }}?size=60" class="logo">
+                {% endif %}
+
+                {{ company_info.symbol }}
+            </h1>
+
+            <hr>
+            <h2 style="font-size: 24px">{{ company_info.longName }}</h2>
+
+            <h4 style="font-size: 16px">{{ company_info.country }}</h4>
+            <h4 style="font-size: 16px">{{ company_info.sector }}</h4>
+            <h4 style="font-size: 16px">{{ company_info.industry }}</h4>
+            <h4 style="font-size: 16px"><a href="{{ company_info.website }}" target="_blank" style="color: black">{{ company_info.website }}</a></h4>
+            <hr>
+            <table>
+                <tr>
+                    <td>Sequential Buy Count Daily:</td>
+                    <td class="table-number">{{ demark_counts.seq_buy_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Buy Count Daily</td>
+                    <td class="table-number">{{ demark_counts.combo_buy_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Sequential Buy Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.seq_buy_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Buy Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.combo_buy_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Buy 9-13-9 Sequential</td>
+                    <td class="table-number">{{ 'True' if demark_counts.seq_buy_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+                <tr>
+                    <td>Buy 9-13-9 Combo</td>
+                    <td class="table-number">{{ 'True' if demark_counts.combo_buy_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+                <tr>
+                    <td>Sequential Sell Count Daily</td>
+                    <td class="table-number">{{ demark_counts.seq_sell_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Sell Count Daily</td>
+                    <td class="table-number">{{ demark_counts.combo_sell_count_daily }}</td>
+                </tr>
+                <tr>
+                    <td>Sequential Sell Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.seq_sell_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Combo Sell Count Weekly</td>
+                    <td class="table-number">{{ demark_counts.combo_sell_count_weekly }}</td>
+                </tr>
+                <tr>
+                    <td>Sell 9-13-9 Sequential</td>
+                    <td class="table-number">{{ 'True' if demark_counts.seq_sell_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+                <tr>
+                    <td>Sell 9-13-9 Combo</td>
+                    <td class="table-number">{{ 'True' if demark_counts.combo_sell_9_13_9 == 1 else 'False' }}</td>
+                </tr>
+
+            </table>
+
+{#            <p>Sequential Buy Count Daily: {{ demark_counts.seq_buy_count_daily }}</p>#}
+{#            <p>Combo Buy Count Daily: {{ demark_counts.combo_buy_count_daily }}</p>#}
+{#            <p>Sequential Buy Count Weekly: {{ demark_counts.seq_buy_count_weekly }}</p>#}
+{#            <p>Combo Buy Count Weekly: {{ demark_counts.combo_buy_count_weekly }}</p>#}
+{#            <p>Buy 9-13-9 Sequential: {{ 'True' if demark_counts.seq_buy_9_13_9 == 1 else 'False' }}</p>#}
+{#            <p>Buy 9-13-9 Combo: {{ 'True' if demark_counts.combo_buy_9_13_9 == 1 else 'False' }}</p>#}
+{#            <hr>#}
+{#            <p>Sequential Sell Count Daily: {{ demark_counts.seq_sell_count_daily }}</p>#}
+{#            <p>Combo Sell Count Daily: {{ demark_counts.combo_sell_count_daily }}</p>#}
+{#            <p>Sequential Sell Count Weekly: {{ demark_counts.seq_sell_count_weekly }}</p>#}
+{#            <p>Combo Sell Count Weekly: {{ demark_counts.combo_sell_count_weekly }}</p>#}
+{#            <p>Sell 9-13-9 Sequential: {{ 'True' if demark_counts.seq_sell_9_13_9 == 1 else 'False' }}</p>#}
+{#            <p>Sell 9-13-9 Combo: {{ 'True' if demark_counts.combo_sell_9_13_9 == 1 else 'False' }}</p>#}
+        </div>
+    </div>
+
+    <br>
+
+    <div class="col-sm-9">
+      <div class="well">
+        <h4>About</h4>
+          <hr>
+       <p class="text-body">{{ company_info.longBusinessSummary }}</p>
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="well">
+            <h4>Ownership</h4>
+              <hr>
+              <table>
+                  <tr>
+                      {% if major_holders[ticker].insidersPercentHeld %}
+                          <td>Held By Insiders</td>
+                            <td>
+                                {{ (major_holders[ticker].insidersPercentHeld * 100)|default(0)|round(1) }}%
+                            </td>
+                        </tr>
+                         <tr>
+                            <td>Held By Institutions</td>
+                            <td>{{ (major_holders[ticker].institutionsFloatPercentHeld * 100)|default(0)|round(1) }}%</td>
+                        </tr>
+                        <tr>
+                            <td>Number Of Institutions</td>
+                            <td>{{ major_holders[ticker].institutionsCount }}</td>
+                        </tr>
+                    {% else %}
+                          <tr> <td>No Major Holders</td> </tr>
+                      {% endif %}
+              </table>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="well">
+            <h4>Dividends</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Dividend Per Share</td>
+                      <td>{{ company_info.dividendRate|default(0)|round(3)}}</td>
+                  </tr>
+                  <tr>
+                      <td>Dividend Yield</td>
+                      <td>{{ (company_info.dividendYield|default(0) * 100)|round(3)}}%</td>
+                  </tr>
+                  <tr>
+                      <td>Payout Ratio</td>
+                      <td>{{ company_info.payoutRatio|default(0)|round(3) }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="well">
+            <h4>Analysts Recommendations</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Median Target Price</td>
+                      <td>{{ company_info.targetMedianPrice|default('N/A') }}</td>
+                  </tr>
+                  <tr>
+                      <td>Current Price</td>
+                      <td>{{ company_info.regularMarketPreviousClose|default('N/A') }}</td>
+                  </tr>
+                  <tr>
+                      <td>Number Of Analysts</td>
+                      <td>{{ company_info.numberOfAnalystOpinions|default('N/A') }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="well">
+            <h4>Shares Short</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Short Interest</td>
+                      <td> {{ (company_info.shortPercentOfFloat|default(0) * 100)|round(3) }}%</td>
+                  </tr>
+                  <tr>
+                      <td>Short Ratio</td>
+                      <td>{{ company_info.shortRatio|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Shares Short</td>
+                      <td>{% if company_info.sharesShort %}{{ "{0:,.0f}".format(company_info.sharesShort) }}{% else %}N/A{% endif %}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+
+
+      <div class="col-sm-3">
+          <div class="well">
+            <h4>ISS Governance QualityScore</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Audit Risk</td>
+                      <td>{{ company_info.auditRisk|default('0') }}</td>
+                  </tr>
+                  <tr>
+                      <td>Share Holder Rights Risk</td>
+                      <td>{{ company_info.shareHolderRightsRisk|default('0') }}</td>
+                  </tr>
+                  <tr>
+                      <td>Compensation Risk</td>
+                      <td>{{ company_info.compensationRisk|default('0') }}</td>
+                  </tr>
+                  <tr>
+                      <td>Board Risk</td>
+                      <td>{{ company_info.boardRisk|default('0') }}</td>
+                  </tr>
+                  <tr>
+                      <td>Overall Risk</td>
+                      <td>{{ company_info.overallRisk|default('0') }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+
+
+        <div class="col-sm-3">
+          <div class="well">
+
+              <h4>Valuation Metrics</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Trailing P/E</td>
+                      <td>{{ company_info.trailingPE|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Forward P/E</td>
+                      <td>{{ company_info.forwardPE|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Price To Sales</td>
+                      <td>{{ company_info.priceToSalesTrailing12Months|default(0)|float|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>PEG Ratio</td>
+                      <td>{{ company_info.pegRatio|default(0) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Trailing PEG Ratio</td>
+                      <td>{{ company_info.trailingPegRatio|default(0) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Debt to Equity</td>
+                      <td>{{ company_info.debtToEquity|default(0)|round(3) }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="well">
+              <h4>Valuation Metrics</h4>
+              <hr>
+              <table>
+                  <tr>
+                      <td>Debt to Equity</td>
+                      <td>{{ company_info.debtToEquity|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Revenue Per Share</td>
+                      <td>{{ company_info.revenuePerShare|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>Earnings Growth</td>
+                      <td>{{ company_info.earningsGrowth|default(0)|round(3) }}%</td>
+                  </tr>
+                  <tr>
+                      <td>Price to Book</td>
+                      <td>{{ company_info.priceToBook|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>EV/EBITDA</td>
+                      <td>{{ company_info.enterpriseToEbitda|default(0)|round(3) }}</td>
+                  </tr>
+                  <tr>
+                      <td>EV/Revenue</td>
+                      <td>{{ company_info.enterpriseToRevenue|default(0)|round(3) }}</td>
+                  </tr>
+              </table>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="well">
+                <h4>Balance Sheet</h4>
+              <hr>
+                <table>
+                    <tr>
+                        <td>Total Cash</td>
+                        <td>{% if company_info.totalCash %}{{ "{0:,.0f}".format(company_info.totalCash) }}{% else %}N/A{% endif %} {{ company_info.financialCurrency }}</td>
+                    </tr>
+                     <tr>
+                        <td>Total Debt</td>
+                        <td>{% if company_info.totalDebt %}{{ "{0:,.0f}".format(company_info.totalDebt) }}{% else %}N/A{% endif %} {{ company_info.financialCurrency }}</td>
+                    </tr>
+                     <tr>
+                        <td>Total Revenue</td>
+                        <td>{% if company_info.totalRevenue %}{{ "{0:,.0f}".format(company_info.totalRevenue) }}{% else %}N/A{% endif %} {{ company_info.financialCurrency }}</td>
+                    </tr>
+                     <tr>
+                        <td>Gross Profits</td>
+                        <td>{% if company_info.grossProfits %}{{ "{0:,.0f}".format(company_info.grossProfits) }}{% else %}N/A{% endif %} {{ company_info.financialCurrency }}</td>
+                    </tr>
+                     <tr>
+                        <td>Free Cash Flow</td>
+                        <td>{% if company_info.freeCashflow %}{{ "{0:,.0f}".format(company_info.freeCashflow) }}{% else %}N/A{% endif %} {{ company_info.financialCurrency }}</td>
+                    </tr>
+                    <tr>
+                        <td>Operating Cash Flow</td>
+                        <td>{% if company_info.operatingCashflow %}{{ "{0:,.0f}".format(company_info.operatingCashflow) }}{% else %}N/A{% endif %} {{ company_info.financialCurrency }}</td>
+                    </tr>
+
+                </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+        <div class="col-sm-3">
+            <div class="well">
+                <h4>News</h4>
+                <hr>
+                <div id="news-container"></div>
+            </div>
+        </div>
+
+  </div>
+
+</div>
+
+
+
+</body>
+</html>
