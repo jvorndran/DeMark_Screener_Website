@@ -26,6 +26,7 @@
 
         $(document).ready(function () {
             let table = $('#users-table').DataTable({
+                orderClasses: false,
                 "dom": 't p',
                 "pageLength": 100,
                 scrollY: '700px',
@@ -46,7 +47,7 @@
                         data: 'name',
                         visible: true,
                         render: function (data, type, row) {
-                            return '<a href="/screener/' + row.tick + '" target="_blank" style="color: black">' + data + '</a>';
+                            return '<a href="/screener/' + row.tick + '" target="_blank" style="color: gray">' + data + '</a>';
                         }
                     },
                     {data: 'tick', visible: true },
@@ -63,7 +64,9 @@
                     {data: 'combo_sell_w', visible: true},
                     {data: 'seq_s_9139', visible: true},
                     {data: 'combo_s_9139', visible: true}
-                ]
+                ],
+                cellBorder: false,
+
             });
 
             $('#toggle-buy-columns').on('change', function () {
@@ -98,11 +101,11 @@
 <div class="container-fluid" style="padding: 10px">
 
 
-    <nav class="navbar" style="background-color: rgba(241,241,241,0.40)">
-        <div style="background-color: rgba(241,241,241,0.40); display: flex; align-items: center; flex-grow: 1; flex-wrap: wrap">
+    <nav class="navbar" style="background-color: #626D71">
+        <div style="background-color: #CDCDC0; display: flex; align-items: center; flex-grow: 1; flex-wrap: wrap">
 
-            <h1 class="navbar-text title"><img src="../static/pictures/My%20project%20(1).png" style="width: 100px; height: 100px;" alt="Logo">  DeMark Screener</h1>
-
+            <h1 class="navbar-text title">  DeMark Screener</h1>
+            {#<img src="../static/pictures/My%20project%20(1).png" style="width: 100px; height: 100px;" alt="Logo">#}
             <div style="display: flex; align-items: center; justify-content: flex-end; flex-grow: 1; gap: 1em">
 
 
@@ -132,7 +135,7 @@
 
 <br>
     <div class="dataTables-container">
-        <table id="users-table" class="order-column cell-border display compact">
+        <table id="users-table" class=" stripe hover">
             <thead>
             <tr>
                 <th>Name</th>
