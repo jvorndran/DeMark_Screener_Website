@@ -336,7 +336,6 @@ def pop_db(tickers, fund):
 
 
 hong_kong = pd.read_csv('tickers/hong_kong.csv')
-amlp = pd.read_csv('tickers/amlp.csv')
 ashr = pd.read_csv('tickers/ashr.csv')
 austria = pd.read_csv('tickers/austria.csv')
 belgium = pd.read_csv('tickers/belgium.csv')
@@ -345,7 +344,7 @@ chile = pd.read_csv('tickers/chile.csv')
 denmark = pd.read_csv('tickers/denmark.csv')
 
 
-pop_db(amlp, 'Oil Services')
+
 pop_db(ashr, 'Mainland China')
 pop_db(austria, 'Austria')
 pop_db(belgium, 'Belgium')
@@ -475,7 +474,9 @@ xlu = pd.read_csv('tickers/xlu.csv')
 xlv = pd.read_csv('tickers/xlv.csv')
 xly = pd.read_csv('tickers/xly.csv')
 remx = pd.read_csv('tickers/remx.csv')
+amlp = pd.read_csv('tickers/amlp.csv')
 
+pop_db(amlp, 'Oil Services')
 pop_db(remx, 'Minerals')
 pop_db(xlf, 'Financials')
 pop_db(xli, 'Industrials')

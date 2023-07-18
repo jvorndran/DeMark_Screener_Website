@@ -110,13 +110,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-// const button = document.getElementById('myButton');
-//
-// button.addEventListener('click', function() {
-//   button.classList.toggle('active');
-// });
-
-
 
 const observer = new IntersectionObserver((entries) => {
 
