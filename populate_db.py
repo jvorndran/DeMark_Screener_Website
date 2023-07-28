@@ -343,8 +343,6 @@ boat = pd.read_csv('tickers/BOAT.csv')
 chile = pd.read_csv('tickers/chile.csv')
 denmark = pd.read_csv('tickers/denmark.csv')
 
-
-
 pop_db(ashr, 'Mainland China')
 pop_db(austria, 'Austria')
 pop_db(belgium, 'Belgium')
@@ -352,7 +350,6 @@ pop_db(boat, 'Marine Shipping')
 pop_db(chile, 'Chile')
 pop_db(denmark, 'Denmark')
 pop_db(hong_kong, 'China')
-
 
 epol = pd.read_csv('tickers/epol.csv')
 etfs = pd.read_csv('tickers/etfs_details_type_fund_flow.csv')

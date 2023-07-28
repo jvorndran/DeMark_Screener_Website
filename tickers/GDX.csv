@@ -29,7 +29,7 @@ Number,Ticker,Name,Identifier (FIGI),Shares,Asset Class,Market Value $),Notional
 28,OGC.TO,Oceanagold Corp,BBG000RG1PM3,"39,629,851",Stock,"$86,868,042.45", -- ,0.67%
 29,EQX,Equinox Gold Corp,BBG004XB7MN9,"17,297,175",Stock,"$85,102,101.00", -- ,0.66%
 30,IAG,Iamgold Corp,BBG000LL9LQ5,"26,955,961",Stock,"$81,137,442.61", -- ,0.63%
-31,CEY.LN,Centamin Plc,BBG000D32QC5,"65,080,046",Stock,"$80,108,555.77", -- ,0.62%
+31,CEY.L,Centamin Plc,BBG000D32QC5,"65,080,046",Stock,"$80,108,555.77", -- ,0.62%
 32,TXG.TO,Torex Gold Resources Inc,BBG000BSWRQ2,"4,830,951",Stock,"$79,888,531.73", -- ,0.62%
 33,DPM.TO,Dundee Preci Metals Inc,BBG000G9HTM6,"10,692,365",Stock,"$77,248,102.03", -- ,0.60%
 34,CG.TO,Centerra Gold Inc,BBG000PWGV23,"12,400,601",Stock,"$75,258,819.86", -- ,0.58%

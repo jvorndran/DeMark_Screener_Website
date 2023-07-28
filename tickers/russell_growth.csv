@@ -74,11 +74,6 @@ Cabot Corporation,CBT,0.32%
 "Hilton Grand Vacations, Inc.",HGV,0.31%
 CONMED Corporation,CNMD,0.31%
 Fox Factory Holding Corp.,FOXF,0.31%
-Altair Engineering Inc. Class A,ALTR,0.31%
-"Phillips Edison & Company, Inc.",PECO,0.3%
-"Insight Enterprises, Inc.",NSIT,0.3%
-"Duolingo, Inc. Class A",DUOL,0.3%
-John Bean Technologies Corporation,JBT,0.3%
 Fluor Corporation,FLR,0.3%
 Chord Energy Corporation,CHRD,0.3%
 First Financial Bankshares Inc,FFIN,0.3%
@@ -103,7 +98,6 @@ Brink\'s Company,BCO,0.26%
 Lancaster Colony Corporation,LANC,0.26%
 Synaptics Incorporated,SYNA,0.26%
 "Aerojet Rocketdyne Holdings, Inc.",AJRD,0.26%
-U.S. Dollar,Other,0.25%
 Simply Good Foods Co,SMPL,0.25%
 "Kulicke & Soffa Industries, Inc.",KLIC,0.25%
 "iRhythm Technologies, Inc.",IRTC,0.25%
@@ -371,7 +365,6 @@ Montrose Environmental Group Inc,MEG,0.09%
 "Avid Bioservices, Inc.",CDMO,0.08%
 "Trupanion, Inc.",TRUP,0.08%
 Fisker Inc Class A,FSR,0.08%
-"Clearway Energy, Inc. Class A",CWEN.A,0.08%
 Payoneer Global Inc.,PAYO,0.08%
 "Upwork, Inc.",UPWK,0.08%
 "InterDigital, Inc.",IDCC,0.08%
@@ -379,7 +372,6 @@ Payoneer Global Inc.,PAYO,0.08%
 "Talos Energy, Inc.",TALO,0.08%
 "Oxford Industries, Inc.",OXM,0.08%
 "Goosehead Insurance, Inc. Class A",GSHD,0.08%
-Compass Inc Class A,COMP.EQ,0.08%
 "NexPoint Residential Trust, Inc.",NXRT,0.08%
 Veeco Instruments Inc.,VECO,0.08%
 "Everbridge, Inc.",EVBG,0.08%
@@ -526,7 +518,6 @@ BigCommerce Holdings Inc,BIGC,0.05%
 "Vimeo, Inc.",VMEO,0.05%
 SunOpta Inc.,STKL,0.05%
 "Sinclair, Inc. Class A",SBGI,0.05%
-Noble Corporation PLC Class A,NOBLE,0.05%
 "RxSight, Inc.",RXST,0.05%
 International Game Technology PLC,IGT,0.05%
 "FuelCell Energy, Inc.",FCEL,0.05%
@@ -921,7 +912,6 @@ Arbutus Biopharma Corporation,ABUS,0.01%
 "Ring Energy, Inc.",REI,0.01%
 "MetroCity Bankshares, Inc.",MCBS,0.01%
 "Velo3D, Inc.",VLD,0.01%
-Greif Inc Class B,GEF.B,0.01%
 "IGM Biosciences, Inc.",IGMS,0.01%
 "5E Advanced Materials, Inc.",FEAM,0.01%
 Forestar Group Inc.,FOR,0.01%
@@ -955,7 +945,6 @@ MannKind Corporation,MNKD,0.01%
 "Proto Labs, Inc.",PRLB,0.01%
 Quanterix Corporation,QTRX,0.01%
 "Benson Hill, Inc.",BHIL,0.01%
-EQUITY OTHER,Other,0.0%
 "Alta Equipment Group, Inc.",ALTG,0.0%
 Eightco Holdings Inc.,OCTO,0.0%
 "Purple Innovation, Inc.",PRPL,0.0%

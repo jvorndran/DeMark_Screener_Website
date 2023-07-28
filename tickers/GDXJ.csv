@@ -18,7 +18,7 @@ Number,Ticker,Name,Identifier (FIGI),Shares,Asset Class,Market Value $),Notional
 21,EQX,Equinox Gold Corp,BBG004XB7MN9,"11,472,061",Stock,"$56,442,540.12", -- ,1.39%
 22,GOR.AX,Gold Road Resources Ltd,BBG000PK8TF9,"45,585,651",Stock,"$56,133,010.50", -- ,1.38%
 23,IAG,Iamgold Corp,BBG000LL9LQ5,"18,568,674",Stock,"$55,891,708.74", -- ,1.37%
-26,CEY.TO,Centamin Plc,BBG000D32QC5,"42,503,684",Stock,"$52,318,782.01", -- ,1.29%
+26,CEY.L,Centamin Plc,BBG000D32QC5,"42,503,684",Stock,"$52,318,782.01", -- ,1.29%
 28,SA,Seabridge Gold Inc,BBG000JYQX30,"3,532,054",Stock,"$48,707,024.66", -- ,1.20%
 29,FSM,Fortuna Silver Mines Inc,BBG000LDZ482,"13,150,725",Stock,"$46,685,073.75", -- ,1.15%
 30,MAG,Mag Silver Corp,BBG000DHNG15,"3,573,065",Stock,"$45,842,423.95", -- ,1.13%
