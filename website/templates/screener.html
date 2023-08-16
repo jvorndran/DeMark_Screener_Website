@@ -25,7 +25,7 @@
         let sellColumns = [9, 10, 11, 12, 13, 14];
 
         $(document).ready(function () {
-            let table = $('#users-table').DataTable({
+            let table = $('#demark-table').DataTable({
                 orderClasses: false,
                 "dom": 't p',
                 "pageLength": 100,
@@ -100,26 +100,24 @@
 </head>
 <body>
 
-<div class="container-fluid" style="padding: 10px">
+<div class="container-fluid">
+
+    <nav class="navbar">
+        <div class="header">
 
 
-    <nav class="navbar" style="background-color: #363636">
-        <div style="background-color: #CDCDC0; display: flex; align-items: center; flex-grow: 1; flex-wrap: wrap">
+            <h1 class="navbar-text title"><img src="../static/pictures/icon.svg" style="width: 90px; height: 90px;" alt="Logo">  DeMark Screener</h1>
+
+            <div class="toggle-buttons-container">
 
 
-
-            <h1 class="navbar-text title"><img src="../static/pictures/icon.svg" style="width: 100px; height: 100px;" alt="Logo">  DeMark Screener</h1>
-
-            <div style="display: flex; align-items: center; justify-content: flex-end; flex-grow: 1; gap: 1em">
-
-
-                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1em; font-family: Typold, serif;">
+                <div class="toggle-button">
                     <input type="checkbox" id="toggle-buy-columns" />Hide Buy Counts<label for="toggle-buy-columns"></label>
                 </div>
 
 
 
-                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 1em; font-family: Typold, serif;">
+                <div class="toggle-button">
                     <input type="checkbox" id="toggle-sell-columns" checked>Hide Sell Counts<label for="toggle-sell-columns"></label>
                 </div>
 
@@ -135,10 +133,9 @@
 
         </div>
     </nav>
-    <br>
 
     <div class="dataTables-container">
-        <table id="users-table" class="stripe hover">
+        <table id="demark-table" class="stripe hover">
             <thead>
             <tr>
                 <th>Name</th>
