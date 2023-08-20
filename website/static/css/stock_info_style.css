@@ -4,13 +4,14 @@ body {
     background-size: cover;
     background-position: center;
 }
-
+.company-name-card{
+    margin-left: 0.5rem;
+}
     #chart {
-        width: 73%;
+        width: 74%;
         height: 700px;
-        padding-right: 20px;
-        margin-bottom: 20px;
-        margin-left: 10px;
+        margin-left: 1rem;
+        margin-bottom: 2rem;
         background: linear-gradient(to bottom, rgb(166, 166, 166), rgb(255, 255, 255));
         border-radius: 8px;
     }
@@ -49,7 +50,6 @@ body {
         color: blue;
     }
     table {
-          border-collapse: collapse;
           width: 100%;
     }
     td{

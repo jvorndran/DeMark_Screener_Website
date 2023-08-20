@@ -35,11 +35,11 @@
                 responsive: true,
                 paging: true,
                 data: count_data,
-                language:{
-                  paginate: {
-                      previous: 'Previous',
-                      next:     'Next',
-                  }
+                language: {
+                    paginate: {
+                        previous: 'Previous',
+                        next: 'Next',
+                    }
                 },
                 columnDefs: [
                     {targets: 0, className: 'dt-left dt-bold'}
@@ -52,7 +52,7 @@
                             return '<a href="/screener/' + row.tick + '" target="_blank" style="color: gray">' + data + '</a>';
                         }
                     },
-                    {data: 'tick', visible: true },
+                    {data: 'tick', visible: true},
                     {data: 'etf', visible: true},
                     {data: 'seq_buy_d', visible: true},
                     {data: 'combo_buy_d', visible: true},
@@ -105,30 +105,27 @@
     <nav class="navbar">
         <div class="header">
 
-
-            <h1 class="navbar-text title"><img src="../static/pictures/icon.svg" style="width: 90px; height: 90px;" alt="Logo">  DeMark Screener</h1>
+            <h1 class="navbar-text title"><img src="../static/pictures/icon.svg" style="width: 90px; height: 90px;"
+                                               alt="Logo"> DeMark Screener</h1>
 
             <div class="toggle-buttons-container">
 
-
                 <div class="toggle-button">
-                    <input type="checkbox" id="toggle-buy-columns" />Hide Buy Counts<label for="toggle-buy-columns"></label>
+                    <input type="checkbox" id="toggle-buy-columns"/>Hide Buy Counts<label
+                        for="toggle-buy-columns"></label>
                 </div>
 
-
-
                 <div class="toggle-button">
-                    <input type="checkbox" id="toggle-sell-columns" checked>Hide Sell Counts<label for="toggle-sell-columns"></label>
+                    <input type="checkbox" id="toggle-sell-columns" checked>Hide Sell Counts<label
+                        for="toggle-sell-columns"></label>
                 </div>
-
-
 
             </div>
 
             <form autocomplete="off" style="padding-left: 2em; padding-right: 2em">
-                    <div class="autocomplete" style="width: 300px; display: flex; justify-items: flex-end">
-                        <input id="myInput" type="text" name="myCountry" placeholder="Sector/Country">
-                    </div>
+                <div class="autocomplete" style="width: 300px; display: flex; justify-items: flex-end">
+                    <input id="myInput" type="text" name="myCountry" placeholder="Sector/Country">
+                </div>
             </form>
 
         </div>
@@ -169,15 +166,19 @@
 
     <h1>Why DeMark Indicators?</h1>
 
-    <p>DeMark indicators are well renown by the industry for their predictive power. DeMark indicators are used by many of
-        the top traders to determine key points of selling or buying exhaustion. Many institutional investors use DeMark indicators
-        as a key piece in their analysis. DeMark indicators are only available on a select few platforms, each which demand a steep price.
-        As result of the steep price to get access the indicators, many retail investors do not know about them and their predictive power.
-        Their power is a secret among the institutional investor community. This is not your average technical indicator.
+    <p>DeMark indicators are well renown by the industry for their predictive power. DeMark indicators are used by many
+        of
+        the top traders to determine key points of selling or buying exhaustion. Many institutional investors use DeMark
+        indicators
+        as a key piece in their analysis. DeMark indicators are only available on a select few platforms, each which
+        demand a steep price.
+        As result of the steep price to get access the indicators, many retail investors do not know about them and
+        their predictive power.
+        Their power is a secret among the institutional investor community. This is not your average technical
+        indicator.
     </p>
 
 </section>
-
 
 
 <section class="hidden">
@@ -186,7 +187,8 @@
     <h1>TD Sequential</h1>
 
     <h4>
-        <i>   The TD Sequential has 2 phases, the setup and the countdown. The indicator works in both directions, it can act as
+        <i> The TD Sequential has 2 phases, the setup and the countdown. The indicator works in both directions, it can
+            act as
             a sell signal or a buy signal.</i>
     </h4>
 
@@ -197,24 +199,26 @@
 
 <section class="hidden">
 
-        <div class="grid-left" >
+    <div class="grid-left">
 
-            <div style="align-self: center">
+        <div style="align-self: center">
 
-                <h1>The Setup Phase</h1>
+            <h1>The Setup Phase</h1>
 
             <p>
                 The setup phase occurs when there are nine consecutive price bars, with each bar
-                    closing higher or lower than the close four bars earlier. In an upward trend, these bars should have progressively
-                    higher closes, while in a downward trend, the bars should have progressively lower closes. The setup phase is not
-                    interrupted by any price bar closing higher or lower than the corresponding bar four periods earlier.
+                closing higher or lower than the close four bars earlier. In an upward trend, these bars should have
+                progressively
+                higher closes, while in a downward trend, the bars should have progressively lower closes. The setup
+                phase is not
+                interrupted by any price bar closing higher or lower than the corresponding bar four periods earlier.
             </p>
 
-            </div>
+        </div>
 
-            <img src="../static/pictures/setup.png" alt="Sequential" >
+        <img src="../static/pictures/setup.png" alt="Sequential">
 
-         </div>
+    </div>
 
 
 </section>
@@ -222,7 +226,7 @@
 
 <section class="hidden">
 
-        <div class="grid-right" >
+    <div class="grid-right">
 
 
         <img src="../static/pictures/no_cons.png" alt="setup">
@@ -231,19 +235,21 @@
 
             <h1>Countdown Phase</h1>
 
-                <p>
-                      Once the setup phase is complete,
-                    the countdown phase begins. It involves a further series of consecutive price bars with specific rules. For a buy
-                    countdown, there must 13 closes lower than the high of the bar 2 bars prior. For a sell countdown, there must be
-                    13 closes higher than the high of the bar 2 bars prior. It is important to note that these do not need to be consecutive.
-                    A countdown stays active until it is canceled which can happen for many reasons.
-                </p>
+            <p>
+                Once the setup phase is complete,
+                the countdown phase begins. It involves a further series of consecutive price bars with specific rules.
+                For a buy
+                countdown, there must 13 closes lower than the high of the bar 2 bars prior. For a sell countdown, there
+                must be
+                13 closes higher than the high of the bar 2 bars prior. It is important to note that these do not need
+                to be consecutive.
+                A countdown stays active until it is canceled which can happen for many reasons.
+            </p>
 
         </div>
     </div>
 
 </section>
-
 
 
 <section class="hidden" style="margin-bottom: 5vh">
@@ -262,17 +268,20 @@
             and a sell setup occurs the buy countdown is canceled.
         </p>
 
-         <p>
-             If during a countdown a setup in the same direction occurs. For example, if buy countdown is in progress and
-             a buy setup occurs. This is called a recycle. DeMark has 24 different options for dealing with this situation,
-             in this screener we have implemented the most strict one which recycles on any new setup.
-         </p>
+        <p>
+            If during a countdown a setup in the same direction occurs. For example, if buy countdown is in progress and
+            a buy setup occurs. This is called a recycle. DeMark has 24 different options for dealing with this
+            situation,
+            in this screener we have implemented the most strict one which recycles on any new setup.
+        </p>
 
-         <p>
-             If the market trades above or below the highest or lowest point of the setup portion of the Sequential. For example,
-             if the market has an active buy countdown and the market trades above the highest point of its respective buy setup,
-             then the countdown is canceled.
-         </p>
+        <p>
+            If the market trades above or below the highest or lowest point of the setup portion of the Sequential. For
+            example,
+            if the market has an active buy countdown and the market trades above the highest point of its respective
+            buy setup,
+            then the countdown is canceled.
+        </p>
 
         <img src="../static/pictures/opposite_cancel.png" alt="opposite" style="height: 80%">
         <img src="../static/pictures/sequential.png" alt="recycle" style="height: 80%">
@@ -280,23 +289,23 @@
     </div>
 
 
-
 </section>
 
 <section class="hidden">
 
 
-    <div class="grid-left" >
-
+    <div class="grid-left">
 
 
         <div style="align-self: center">
 
-        <h1>Qualifier Bar</h1>
+            <h1>Qualifier Bar</h1>
 
             <p>
-                To complete a TD Sequential, the final bar's close of the countdown has to be above or below the eighth bar of the
-                countdown. For example, the close of bar 13 of a buy countdown must be lower than the close of the eighth bar of the
+                To complete a TD Sequential, the final bar's close of the countdown has to be above or below the eighth
+                bar of the
+                countdown. For example, the close of bar 13 of a buy countdown must be lower than the close of the
+                eighth bar of the
                 countdown.
             </p>
 
@@ -310,7 +319,7 @@
 
 <section class="hidden">
 
-    <div class="grid-right" >
+    <div class="grid-right">
 
 
         <img src="../static/pictures/full.png" alt="setup">
@@ -319,14 +328,15 @@
 
             <h1>Initiating A Position</h1>
 
-                <p>
-                    There are many methods to enter a position when a countdown completes. The first method is to
-                    buy on the completion of the countdown. A more conservative way of entering a position is to wait until
-                    you get a price flip in the opposite direction. For example, if a buy countdown completes then you would buy
-                    at the first time when the market has a close higher than the close 4 bars ago. Alternatively, you could
-                    combine the two and buy half your position size at the countdown completion and buy the other half when
-                    the first bullish price flip occurs. The light blue 13s represent a conservative countdown.
-                </p>
+            <p>
+                There are many methods to enter a position when a countdown completes. The first method is to
+                buy on the completion of the countdown. A more conservative way of entering a position is to wait until
+                you get a price flip in the opposite direction. For example, if a buy countdown completes then you would
+                buy
+                at the first time when the market has a close higher than the close 4 bars ago. Alternatively, you could
+                combine the two and buy half your position size at the countdown completion and buy the other half when
+                the first bullish price flip occurs. The light blue 13s represent a conservative countdown.
+            </p>
 
         </div>
     </div>
@@ -337,46 +347,47 @@
 <section class="hidden">
 
 
-     <h1>TD Combo</h1>
+    <h1>TD Combo</h1>
 
-        <h4>
-            The TD Combo is simular to the TD Sequential. It also has a setup phase with the same parameters, a 13 bar countdown phase,
-            and identical cancellation conditions. However, the parameters of the countdown phase are very different.
-        </h4>
+    <h4>
+        The TD Combo is simular to the TD Sequential. It also has a setup phase with the same parameters, a 13 bar
+        countdown phase,
+        and identical cancellation conditions. However, the parameters of the countdown phase are very different.
+    </h4>
 
 
-        <img src="../static/pictures/combo.png" alt="defer" style="height: 90%; width: 90%">
+    <img src="../static/pictures/combo.png" alt="defer" style="height: 90%; width: 90%">
 
 
 </section>
 
 <section class="hidden">
 
- <div class="grid-left">
+    <div class="grid-left">
 
-     <div style="align-self: center">
+        <div style="align-self: center">
 
-         <h1>Countdown Initialization</h1>
+            <h1>Countdown Initialization</h1>
 
-         <p>
-             When a setup occurs in the TD Sequential, the countdown starts from that bar. When a
-             setup occurs for a combo, the count starts at the first bar of the setup. Meaning that it goes
-             back 9 bars to look for the conditions for count increments. The parameters of each count increment
-             is also stricter than the TD Sequential.
-         </p>
+            <p>
+                When a setup occurs in the TD Sequential, the countdown starts from that bar. When a
+                setup occurs for a combo, the count starts at the first bar of the setup. Meaning that it goes
+                back 9 bars to look for the conditions for count increments. The parameters of each count increment
+                is also stricter than the TD Sequential.
+            </p>
 
-     </div>
+        </div>
 
-     <img src="../static/pictures/setup.png" alt="Sequential" >
+        <img src="../static/pictures/setup.png" alt="Sequential">
 
- </div>
+    </div>
 
 </section>
 
 
 <section class="hidden">
 
-    <div class="grid-right" >
+    <div class="grid-right">
 
 
         <img src="../static/pictures/buy_combo.png" alt="setup">
@@ -385,11 +396,12 @@
 
             <h1>TD Combo Buy Countdown</h1>
 
-                <p>
-                   The conditions for each increment for a combo buy countdown are as follows: the close must be less
-                    than the low of 2 bars prior, the low must be lower than low 1 bar prior, the close must be lower than the
-                    close 1 bar prior, and the close must be lower than the close of the last increment of the count.
-                </p>
+            <p>
+                The conditions for each increment for a combo buy countdown are as follows: the close must be less
+                than the low of 2 bars prior, the low must be lower than low 1 bar prior, the close must be lower than
+                the
+                close 1 bar prior, and the close must be lower than the close of the last increment of the count.
+            </p>
 
         </div>
     </div>
@@ -399,43 +411,45 @@
 
 <section class="hidden">
 
- <div class="grid-left">
+    <div class="grid-left">
 
-     <div style="align-self: center">
+        <div style="align-self: center">
 
-         <h1>TD Combo Sell Countdown</h1>
+            <h1>TD Combo Sell Countdown</h1>
 
-         <p>
-             The conditions for each increment for a combo sell countdown are as follows: the close must be greater
-             than the high of 2 bars prior, the high must be higher than high 1 bar prior, the close must be greater than the
-             close 1 bar prior, and the close must be higher than the close of the last increment of the count.
-         </p>
+            <p>
+                The conditions for each increment for a combo sell countdown are as follows: the close must be greater
+                than the high of 2 bars prior, the high must be higher than high 1 bar prior, the close must be greater
+                than the
+                close 1 bar prior, and the close must be higher than the close of the last increment of the count.
+            </p>
 
-     </div>
+        </div>
 
-     <img src="../static/pictures/sell_combo.png" alt="Sequential" >
+        <img src="../static/pictures/sell_combo.png" alt="Sequential">
 
- </div>
+    </div>
 
 </section>
 
 <section class="hidden">
 
 
-     <h1>TD 9-13-9</h1>
+    <h1>TD 9-13-9</h1>
 
-        <p>
-            The 9-13-9 is an additional exhaustion indicator. It occurs when you have a setup 9, then a countdown 13, a
-            price flip in the opposite direction, and then a subsequent setup 9 in the same direction as the first 9 and 13.
-            The countdown part can either be a sequential or a combo. It is important to note that after the countdown 13,
-            a price flip in the opposite direction must occur to start looking for the final setup 9. For example, if you
-            get a buy countdown 13, to get a 9-13-9, you need a close that is greater than the close 4 bars ago, and then another
-            buy setup 9. True for 9-13-9 displays when there has been a 9-13-9 in the prior 6 days. This is a rare event,
-            out of 7,000 stocks that are scanned, normally 7-10 stocks have one.
-        </p>
+    <p>
+        The 9-13-9 is an additional exhaustion indicator. It occurs when you have a setup 9, then a countdown 13, a
+        price flip in the opposite direction, and then a subsequent setup 9 in the same direction as the first 9 and 13.
+        The countdown part can either be a sequential or a combo. It is important to note that after the countdown 13,
+        a price flip in the opposite direction must occur to start looking for the final setup 9. For example, if you
+        get a buy countdown 13, to get a 9-13-9, you need a close that is greater than the close 4 bars ago, and then
+        another
+        buy setup 9. True for 9-13-9 displays when there has been a 9-13-9 in the prior 6 days. This is a rare event,
+        out of 7,000 stocks that are scanned, normally 7-10 stocks have one.
+    </p>
 
 
-        <img src="../static/pictures/9_13_9.png" alt="defer" style="height: 90%; width: 90%">
+    <img src="../static/pictures/9_13_9.png" alt="defer" style="height: 90%; width: 90%">
 
 
 </section>
@@ -444,23 +458,23 @@
 <section class="hidden">
 
 
-     <h1>Putting It All Together</h1>
+    <h1>Putting It All Together</h1>
 
-        <p>
-            The best way to use the screener is to buy stocks when they have both a combo and a sequential near each-other.
-            This way you are combing the predictive power of both indicators. Also, do not buy any stock just because it has
-            an active DeMark indicator. If a company is headed for bankruptcy a DeMark indicator will not fix this. It is also
-            important to take not when price does not respond to a DeMark indicator as it suggests that there is some underlying
-            very strong macro trend.
-        </p>
+    <p>
+        The best way to use the screener is to buy stocks when they have both a combo and a sequential near each-other.
+        This way you are combing the predictive power of both indicators. Also, do not buy any stock just because it has
+        an active DeMark indicator. If a company is headed for bankruptcy a DeMark indicator will not fix this. It is
+        also
+        important to take not when price does not respond to a DeMark indicator as it suggests that there is some
+        underlying
+        very strong macro trend.
+    </p>
 
 
-        <img src="../static/pictures/full.png" alt="defer" style="height: 90%; width: 90%">
+    <img src="../static/pictures/full.png" alt="defer" style="height: 90%; width: 90%">
 
 
 </section>
-
-
 
 
 </body>
