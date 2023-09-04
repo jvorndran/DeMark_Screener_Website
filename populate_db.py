@@ -290,6 +290,8 @@ start_date_weekly = (datetime.now() - timedelta(days=12*30)).strftime('%Y-%m-%d'
 # pass a list of tickers
 def pop_db(tickers, fund):
 
+    print(f"Started adding {fund} Counts to Database")
+
     with app.app_context():
         for index, row in tickers.iterrows():
 
@@ -443,7 +445,7 @@ pop_db(semis, 'Semiconductors')
 pop_db(sil, 'Silver Miners')
 pop_db(south_africa, 'South Africa')
 pop_db(south_korea, 'South Korea')
-pop_db(spy, 'United States')
+#pop_db(spy, 'United States')
 pop_db(sweeden, 'Sweeden')
 pop_db(tan, 'Solar')
 pop_db(tawian, 'Tawian')
