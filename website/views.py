@@ -9,15 +9,7 @@ from datetime import datetime, timedelta
 import json
 from yahooquery import Ticker
 
-clearbit_api_key = "pk_b38a23a7a915e355ce34c636e5d5fd88"
-
-
 @app.route('/')
-def home():
-    return render_template('sign_in.html')
-
-
-@app.route('/screener')
 def screener():
 
     data = Counts.query.all()
