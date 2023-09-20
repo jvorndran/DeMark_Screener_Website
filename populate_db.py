@@ -4,8 +4,7 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
 import sys
-import sequential
-import combo_strict
+import Indicators
 
 with app.app_context():
     db.drop_all()
@@ -34,11 +33,11 @@ def pop_db(tickers, fund):
 
             try:
 
-                buy_count_d, sell_count_d, has_9_13_b, has_9_13_s = sequential(price_data_daily)
-                buy_count_w, sell_count_w, has_9_13_b_w, has_9_13_s_w = sequential(price_data_weekly)
+                buy_count_d, sell_count_d, has_9_13_b, has_9_13_s = Indicators.sequential(price_data_daily)
+                buy_count_w, sell_count_w, has_9_13_b_w, has_9_13_s_w = Indicators.sequential(price_data_weekly)
 
-                combo_buy_count_d, combo_sell_count_d, combo_has_9_13_b, combo_has_9_13_s = combo_strict(price_data_daily)
-                combo_buy_count_d_w, combo_sell_count_d_w, combo_has_9_13_b_w, combo_has_9_13_s_w = combo_strict(price_data_weekly)
+                combo_buy_count_d, combo_sell_count_d, combo_has_9_13_b, combo_has_9_13_s = Indicators.combo_strict(price_data_daily)
+                combo_buy_count_d_w, combo_sell_count_d_w, combo_has_9_13_b_w, combo_has_9_13_s_w = Indicators.combo_strict(price_data_weekly)
 
             except ValueError:
                 print("Encountered an Error")

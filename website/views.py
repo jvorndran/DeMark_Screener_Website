@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import json
 from yahooquery import Ticker
 
+
 @app.route('/')
 def screener():
 
