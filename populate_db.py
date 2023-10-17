@@ -3,7 +3,6 @@ from website import db, app
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
-import sys
 import Indicators
 
 with app.app_context():
