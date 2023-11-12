@@ -4,7 +4,6 @@ from flask import render_template, redirect, url_for
 from website.models import Counts
 import re
 import yfinance as yf
-from website import db
 from datetime import datetime, timedelta
 import json
 from yahooquery import Ticker
