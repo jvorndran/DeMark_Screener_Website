@@ -1,22 +1,28 @@
-# Screener for DeMark Indicators
-This app screens over 7,000 stocks for various indicators in the DeMark suite. DeMark indicators are
-used widely in the institutional investment community. However, they are behind a very steep paywall. The
-cheapest platform to get them on is $250 a month.
+# DeMark Indicator Screener
 
-# Features
-It is just a single page application (literally), with a easy to navigate table of all stocks status for various
-indicators. This screener supports the three most popular indicators, the TD Sequential, the TD Combo, and the 
-9-13-9. These indicators are calculated on a weekly and daily timeframe. Most likely none of this makes sense. 
-If you would like to read more about how they work there is a overview with examples under the table.
+This Flask app screens roughly 7,000 stocks for a few DeMark indicator setups and renders the results in a
+single server-rendered interface.
 
-# Usage
-After cloning the project, use the command "npm install" to download the node dependencies, then use the command 
-"pip install -r requirements.txt" to download the python dependencies. Then you should be ready to run the server. 
-There is a script that populates the database with the total of 14 indicators (populate_db.py). It downloads
-around 1 year of price data for 7,000 stocks so it takes a long time to execute (normally around 3 hours). 
-Then you run main.py and the server will start.
+## Highlights
 
-# Tech Used
-For the backend Flask was used. For the frontend, jinja2 templates were used and rendered on the server. For 
-the database sqlite was used.
+- Daily and weekly TD Sequential, TD Combo, and 9-13-9 signals
+- ETF drill-down pages and individual stock detail views
+- SQLite-backed data populated from downloaded market data
+
+## Local setup
+
+1. Create and activate a Python virtual environment.
+2. Install the Python dependencies with `pip install -r requirements.txt`.
+3. If you need the legacy Node dependency captured in `package.json`, run `npm install`.
+4. Run `python populate_db.py` to rebuild the SQLite database. This downloads about a year of price history for
+   thousands of tickers, so it can take a few hours to finish.
+5. Start the development server with `python main.py`.
+
+The Flask app stores its SQLite database at `instance/database.db`.
+
+## Stack
+
+- Flask with Jinja templates
+- SQLAlchemy with SQLite
+- pandas, `yfinance`, and `yahooquery` for market data processing
 
