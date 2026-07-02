@@ -38,7 +38,8 @@ body {
     align-items: center;
     justify-content: flex-end;
     flex-grow: 1;
-    gap: 0.5rem
+    flex-wrap: wrap;
+    gap: 0.75rem
 }
 
 .toggle-button{
@@ -48,6 +49,54 @@ body {
     gap: 0.4em;
     font-family: Typold, serif;
     font-size: 0.9rem
+}
+
+.signal-control{
+    display: grid;
+    gap: 0.25rem;
+    color: var(--jet);
+    font-size: 0.78rem;
+    font-weight: 450;
+}
+
+.signal-control select{
+    min-width: 130px;
+    border: 1px solid rgba(57, 52, 58, 0.25);
+    border-radius: 4px;
+    background: #f1f1f1;
+    color: var(--jet);
+    font-family: Typold, serif;
+    font-size: 0.9rem;
+    padding: 0.45rem 0.6rem;
+}
+
+.signal-summary{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin: 0.75rem 1rem;
+}
+
+.signal-summary div{
+    background: #2f2b31;
+    border: 1px solid rgba(221, 188, 149, 0.28);
+    border-radius: 6px;
+    color: whitesmoke;
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.75rem 1rem;
+}
+
+.signal-summary strong{
+    color: palegoldenrod;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+.summary-label{
+    color: #CDCDC0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
 }
 
 .container {
@@ -364,4 +413,10 @@ input[type=submit] {
 .autocomplete-active {
   background-color: DodgerBlue !important;
   color: #ffffff;
+}
+
+@media (max-width: 900px) {
+    .signal-summary{
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+    }
 }

@@ -23,8 +23,48 @@
 
         let buyColumns = [3, 4, 5, 6, 7, 8];
         let sellColumns = [9, 10, 11, 12, 13, 14];
+        let buyFields = ['seq_buy_d', 'combo_buy_d', 'seq_buy_w', 'combo_buy_w', 'seq_b_9139', 'combo_b_9139'];
+        let sellFields = ['seq_sell_d', 'combo_sell_d', 'seq_sell_w', 'combo_sell_w', 'seq_s_9139', 'combo_s_9139'];
+
+        function maxSignalCount(row, fields) {
+            return fields.reduce(function (maxCount, field) {
+                let value = parseFloat(row[field]);
+                return Math.max(maxCount, Number.isNaN(value) ? 0 : value);
+            }, 0);
+        }
+
+        function rowMatchesSignalFilter(row, minimumCount, direction) {
+            let buyMax = maxSignalCount(row, buyFields);
+            let sellMax = maxSignalCount(row, sellFields);
+
+            if (minimumCount === 0 && direction === 'all') {
+                return true;
+            }
+            if (direction === 'buy') {
+                return buyMax >= minimumCount;
+            }
+            if (direction === 'sell') {
+                return sellMax >= minimumCount;
+            }
+            if (direction === 'both') {
+                return buyMax >= minimumCount && sellMax >= minimumCount;
+            }
+            return buyMax >= minimumCount || sellMax >= minimumCount;
+        }
 
         $(document).ready(function () {
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                if (settings.nTable.id !== 'demark-table') {
+                    return true;
+                }
+
+                let minimumCount = parseInt($('#minimum-signal').val(), 10);
+                let direction = $('#signal-direction').val();
+                let row = settings.aoData[dataIndex]._aData;
+
+                return rowMatchesSignalFilter(row, minimumCount, direction);
+            });
+
             let table = $('#demark-table').DataTable({
                 orderClasses: false,
                 "dom": 't p',
@@ -71,6 +111,23 @@
 
             });
 
+            function updateSignalSummary() {
+                let minimumCount = parseInt($('#minimum-signal').val(), 10);
+                let direction = $('#signal-direction').val();
+                let filteredCount = table.rows({search: 'applied'}).count();
+                let buyMatches = count_data.filter(function (row) {
+                    return maxSignalCount(row, buyFields) >= minimumCount;
+                }).length;
+                let sellMatches = count_data.filter(function (row) {
+                    return maxSignalCount(row, sellFields) >= minimumCount;
+                }).length;
+
+                $('#results-count').text(filteredCount.toLocaleString() + ' of ' + count_data.length.toLocaleString());
+                $('#buy-signal-count').text(buyMatches.toLocaleString());
+                $('#sell-signal-count').text(sellMatches.toLocaleString());
+                $('#active-direction').text(direction.charAt(0).toUpperCase() + direction.slice(1));
+            }
+
             $('#toggle-buy-columns').on('change', function () {
                 let isVisible = !$(this).is(':checked');
 
@@ -89,9 +146,18 @@
 
             });
 
-            $('#myInput').on('keyup', function () {
+            $('#signal-direction, #minimum-signal').on('change', function () {
+                table.draw();
+                updateSignalSummary();
+            });
+
+            table.on('draw', updateSignalSummary);
+
+            $('#myInput').on('keyup change input', function () {
                 table.column(2).search(this.value).draw();
             });
+
+            updateSignalSummary();
 
         });
 
@@ -109,6 +175,27 @@
                                                alt="Logo"> DeMark Screener</h1>
 
             <div class="toggle-buttons-container">
+
+                <div class="signal-control">
+                    <span>Signal Direction</span>
+                    <select id="signal-direction">
+                        <option value="all">All Signals</option>
+                        <option value="buy">Buy Only</option>
+                        <option value="sell">Sell Only</option>
+                        <option value="both">Buy And Sell</option>
+                    </select>
+                </div>
+
+                <div class="signal-control">
+                    <span>Minimum Count</span>
+                    <select id="minimum-signal">
+                        <option value="0">Any</option>
+                        <option value="8">8+</option>
+                        <option value="9">9+</option>
+                        <option value="12">12+</option>
+                        <option value="13">13+</option>
+                    </select>
+                </div>
 
                 <div class="toggle-button">
                     <input type="checkbox" id="toggle-buy-columns"/>Hide Buy Counts<label
@@ -130,6 +217,25 @@
 
         </div>
     </nav>
+
+    <div class="signal-summary">
+        <div>
+            <span class="summary-label">Filtered Rows</span>
+            <strong id="results-count">0</strong>
+        </div>
+        <div>
+            <span class="summary-label">Buy Matches</span>
+            <strong id="buy-signal-count">0</strong>
+        </div>
+        <div>
+            <span class="summary-label">Sell Matches</span>
+            <strong id="sell-signal-count">0</strong>
+        </div>
+        <div>
+            <span class="summary-label">Direction</span>
+            <strong id="active-direction">All</strong>
+        </div>
+    </div>
 
     <div class="dataTables-container">
         <table id="demark-table" class="stripe hover">
