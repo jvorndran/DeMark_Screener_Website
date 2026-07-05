@@ -99,6 +99,114 @@ body {
     text-transform: uppercase;
 }
 
+.shortlist-panel{
+    background: #2f2b31;
+    border: 1px solid rgba(84, 167, 248, 0.32);
+    border-radius: 6px;
+    margin: 0 1rem 1rem;
+    padding: 0.85rem 1rem 1rem;
+}
+
+.shortlist-header{
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.shortlist-header h2{
+    color: whitesmoke;
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.shortlist-header span{
+    color: #CDCDC0;
+    font-size: 0.82rem;
+}
+
+.shortlist-grid{
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.shortlist-item,
+.shortlist-empty{
+    align-items: center;
+    background: #39343A;
+    border: 1px solid rgba(221, 188, 149, 0.22);
+    border-radius: 5px;
+    color: whitesmoke;
+    display: grid;
+    gap: 0.65rem;
+    min-height: 76px;
+    padding: 0.7rem;
+}
+
+.shortlist-item{
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+}
+
+.shortlist-rank{
+    align-items: center;
+    background: #54a7f8;
+    border-radius: 50%;
+    color: #111;
+    display: flex;
+    font-size: 0.78rem;
+    font-weight: 700;
+    height: 28px;
+    justify-content: center;
+    width: 28px;
+}
+
+.shortlist-body{
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.shortlist-body a{
+    color: palegoldenrod;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.shortlist-body strong,
+.shortlist-meta{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.shortlist-body strong{
+    color: whitesmoke;
+    font-size: 0.84rem;
+    font-weight: 500;
+}
+
+.shortlist-meta{
+    color: #CDCDC0;
+    font-size: 0.75rem;
+}
+
+.shortlist-score{
+    color: #54a7f8;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.shortlist-empty{
+    color: #CDCDC0;
+    grid-template-columns: 1fr;
+}
+
 .container {
     width: 100%;
     max-width: 1200px;
@@ -418,5 +526,16 @@ input[type=submit] {
 @media (max-width: 900px) {
     .signal-summary{
         grid-template-columns: repeat(2, minmax(120px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .shortlist-header{
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .shortlist-grid{
+        grid-template-columns: 1fr;
     }
 }

@@ -25,12 +25,60 @@
         let sellColumns = [9, 10, 11, 12, 13, 14];
         let buyFields = ['seq_buy_d', 'combo_buy_d', 'seq_buy_w', 'combo_buy_w', 'seq_b_9139', 'combo_b_9139'];
         let sellFields = ['seq_sell_d', 'combo_sell_d', 'seq_sell_w', 'combo_sell_w', 'seq_s_9139', 'combo_s_9139'];
+        let signalLabels = {
+            seq_buy_d: 'Seq Buy Daily',
+            combo_buy_d: 'Combo Buy Daily',
+            seq_buy_w: 'Seq Buy Weekly',
+            combo_buy_w: 'Combo Buy Weekly',
+            seq_b_9139: 'Seq 9-13-9 Buy',
+            combo_b_9139: 'Combo 9-13-9 Buy',
+            seq_sell_d: 'Seq Sell Daily',
+            combo_sell_d: 'Combo Sell Daily',
+            seq_sell_w: 'Seq Sell Weekly',
+            combo_sell_w: 'Combo Sell Weekly',
+            seq_s_9139: 'Seq 9-13-9 Sell',
+            combo_s_9139: 'Combo 9-13-9 Sell'
+        };
+
+        function signalValue(row, field) {
+            let value = parseFloat(row[field]);
+            return Number.isNaN(value) ? 0 : value;
+        }
 
         function maxSignalCount(row, fields) {
             return fields.reduce(function (maxCount, field) {
-                let value = parseFloat(row[field]);
-                return Math.max(maxCount, Number.isNaN(value) ? 0 : value);
+                return Math.max(maxCount, signalValue(row, field));
             }, 0);
+        }
+
+        function strongestSignal(row, fields) {
+            return fields.reduce(function (strongest, field) {
+                let count = signalValue(row, field);
+
+                if (count > strongest.count) {
+                    return {
+                        count: count,
+                        field: field,
+                        label: signalLabels[field]
+                    };
+                }
+
+                return strongest;
+            }, {count: 0, field: null, label: 'No active signal'});
+        }
+
+        function signalFieldsForDirection(direction) {
+            if (direction === 'buy') {
+                return buyFields;
+            }
+            if (direction === 'sell') {
+                return sellFields;
+            }
+            return buyFields.concat(sellFields);
+        }
+
+        function formatSignalCount(count) {
+            return Number.isInteger(count) ? count.toString() : count.toFixed(1);
         }
 
         function rowMatchesSignalFilter(row, minimumCount, direction) {
@@ -50,6 +98,29 @@
                 return buyMax >= minimumCount && sellMax >= minimumCount;
             }
             return buyMax >= minimumCount || sellMax >= minimumCount;
+        }
+
+        function buildSignalShortlist(rows, direction) {
+            let fields = signalFieldsForDirection(direction);
+
+            return rows.map(function (row) {
+                let strongest = strongestSignal(row, fields);
+
+                return {
+                    name: row.name,
+                    ticker: row.tick,
+                    group: row.etf,
+                    strongest: strongest
+                };
+            }).filter(function (row) {
+                return row.strongest.count > 0;
+            }).sort(function (a, b) {
+                if (b.strongest.count !== a.strongest.count) {
+                    return b.strongest.count - a.strongest.count;
+                }
+
+                return a.ticker.localeCompare(b.ticker);
+            }).slice(0, 8);
         }
 
         $(document).ready(function () {
@@ -111,10 +182,51 @@
 
             });
 
+            function updateSignalShortlist(rows, direction) {
+                let shortlist = buildSignalShortlist(rows, direction);
+                let $list = $('#signal-shortlist');
+
+                $list.empty();
+                $('#shortlist-caption').text(shortlist.length ? 'Top ' + shortlist.length + ' active signals' : 'No active signals');
+
+                if (!shortlist.length) {
+                    $('<li>')
+                        .addClass('shortlist-empty')
+                        .text('No active signal leaders match the current filters.')
+                        .appendTo($list);
+                    return;
+                }
+
+                shortlist.forEach(function (row, index) {
+                    let $item = $('<li>').addClass('shortlist-item');
+                    let $rank = $('<span>').addClass('shortlist-rank').text(index + 1);
+                    let $body = $('<div>').addClass('shortlist-body');
+                    let $link = $('<a>')
+                        .attr('href', '/screener/' + encodeURIComponent(row.ticker))
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener')
+                        .text(row.ticker);
+
+                    $('<strong>').text(row.name).appendTo($body);
+                    $('<span>').addClass('shortlist-meta').text(row.group + ' - ' + row.strongest.label).appendTo($body);
+
+                    $('<span>')
+                        .addClass('shortlist-score')
+                        .text(formatSignalCount(row.strongest.count))
+                        .appendTo($item);
+
+                    $item.prepend($body);
+                    $item.prepend($rank);
+                    $body.prepend($link);
+                    $item.appendTo($list);
+                });
+            }
+
             function updateSignalSummary() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
                 let filteredCount = table.rows({search: 'applied'}).count();
+                let filteredRows = table.rows({search: 'applied'}).data().toArray();
                 let buyMatches = count_data.filter(function (row) {
                     return maxSignalCount(row, buyFields) >= minimumCount;
                 }).length;
@@ -126,6 +238,7 @@
                 $('#buy-signal-count').text(buyMatches.toLocaleString());
                 $('#sell-signal-count').text(sellMatches.toLocaleString());
                 $('#active-direction').text(direction.charAt(0).toUpperCase() + direction.slice(1));
+                updateSignalShortlist(filteredRows, direction);
             }
 
             $('#toggle-buy-columns').on('change', function () {
@@ -235,6 +348,14 @@
             <span class="summary-label">Direction</span>
             <strong id="active-direction">All</strong>
         </div>
+    </div>
+
+    <div class="shortlist-panel">
+        <div class="shortlist-header">
+            <h2>Signal Shortlist</h2>
+            <span id="shortlist-caption">Top active signals</span>
+        </div>
+        <ul id="signal-shortlist" class="shortlist-grid"></ul>
     </div>
 
     <div class="dataTables-container">
