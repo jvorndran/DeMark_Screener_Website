@@ -127,8 +127,48 @@ def etf_details(tick):
     summary = t.summary_profile
     performance = t.fund_performance
 
+    sector_weight_labels = [
+        'Real Estate',
+        'Consumer Cyclical',
+        'Basic Materials',
+        'Consumer Defensive',
+        'Technology',
+        'Communication Services',
+        'Financial Services',
+        'Utilities',
+        'Industrials',
+        'Energy',
+        'Healthcare'
+    ]
+    top_sector = None
+
     if sector_weights is not None:
         sector_weights = sector_weights.reset_index().values.tolist()
+        weighted_sectors = []
+
+        for idx, row in enumerate(sector_weights):
+            if len(row) > 1 and row[1] is not None and pd.notna(row[1]):
+                weighted_sectors.append({
+                    'name': sector_weight_labels[idx] if idx < len(sector_weight_labels) else row[0],
+                    'weight': row[1]
+                })
+
+        if weighted_sectors:
+            top_sector = max(weighted_sectors, key=lambda sector: sector['weight'])
+
+    top_holding = None
+    holdings = holding_info.get(tick, {}).get('holdings') if holding_info else None
+
+    if holdings:
+        top_holding = holdings[0]
+
+    etf_snapshot = {
+        'expense_ratio': profile.get(tick, {}).get('feesExpensesInvestment', {}).get('annualReportExpenseRatio'),
+        'net_assets': profile.get(tick, {}).get('feesExpensesInvestment', {}).get('totalNetAssets'),
+        'ytd_return': performance.get(tick, {}).get('trailingReturnsNav', {}).get('ytd'),
+        'top_sector': top_sector,
+        'top_holding': top_holding
+    }
 
     start_date = datetime.now() - timedelta(days=365)
     price_data = yf.download(tick, start=start_date.strftime('%Y-%m-%d'))
@@ -143,7 +183,8 @@ def etf_details(tick):
                            profile=profile, holding_info=holding_info,
                            sector_weights=sector_weights,
                            quote=quote, summary=summary,
-                           performance=performance
+                           performance=performance,
+                           etf_snapshot=etf_snapshot
                            )
 
 

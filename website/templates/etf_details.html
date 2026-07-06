@@ -51,6 +51,49 @@
             background-size: cover;
             background-position: center;
         }
+        .etf-snapshot {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-bottom: 20px;
+        }
+        .etf-snapshot-card {
+            background: #ffffff;
+            border: 1px solid #d7dde8;
+            border-radius: 8px;
+            min-height: 118px;
+            padding: 14px;
+        }
+        .etf-snapshot-card span {
+            color: #626D71;
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .etf-snapshot-card strong {
+            color: #242424;
+            display: block;
+            font-size: 24px;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+        .etf-snapshot-card small {
+            color: #626D71;
+            display: block;
+            font-size: 13px;
+        }
+        @media (max-width: 950px) {
+            .etf-snapshot {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 560px) {
+            .etf-snapshot {
+                grid-template-columns: 1fr;
+            }
+        }
 
     </style>
 
@@ -193,6 +236,63 @@
     <br>
 
     <div class="col-sm-7">
+        <div class="etf-snapshot">
+            <div class="etf-snapshot-card">
+                <span>Expense Ratio</span>
+                <strong>
+                    {% if etf_snapshot.expense_ratio is not none %}
+                        {{ (etf_snapshot.expense_ratio * 100)|round(2) }}%
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </strong>
+                <small>Annual fund expense</small>
+            </div>
+            <div class="etf-snapshot-card">
+                <span>Net Assets</span>
+                <strong>
+                    {% if etf_snapshot.net_assets is not none %}
+                        {{ etf_snapshot.net_assets|round(1) }}M
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </strong>
+                <small>Assets under management</small>
+            </div>
+            <div class="etf-snapshot-card">
+                <span>YTD Return</span>
+                <strong>
+                    {% if etf_snapshot.ytd_return is not none %}
+                        {{ (etf_snapshot.ytd_return * 100)|round(1) }}%
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </strong>
+                <small>Trailing NAV return</small>
+            </div>
+            <div class="etf-snapshot-card">
+                <span>Largest Exposure</span>
+                <strong>
+                    {% if etf_snapshot.top_sector %}
+                        {{ etf_snapshot.top_sector.name }}
+                    {% elif etf_snapshot.top_holding %}
+                        {{ etf_snapshot.top_holding.symbol }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </strong>
+                <small>
+                    {% if etf_snapshot.top_sector %}
+                        {{ (etf_snapshot.top_sector.weight * 100)|round(1) }}% sector weight
+                    {% elif etf_snapshot.top_holding %}
+                        {{ (etf_snapshot.top_holding.holdingPercent * 100)|round(1) }}% top holding
+                    {% else %}
+                        No exposure data available
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
       <div class="well">
           <h4>About</h4>
           <hr>
