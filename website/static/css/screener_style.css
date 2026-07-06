@@ -207,6 +207,87 @@ body {
     grid-template-columns: 1fr;
 }
 
+.group-signal-panel{
+    background: #2f2b31;
+    border: 1px solid rgba(221, 188, 149, 0.3);
+    border-radius: 6px;
+    margin: 0 1rem 1rem;
+    padding: 0.85rem 1rem 1rem;
+}
+
+.group-signal-header{
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.group-signal-header h2{
+    color: whitesmoke;
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.group-signal-header span{
+    color: #CDCDC0;
+    font-size: 0.82rem;
+}
+
+.group-signal-grid{
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.group-signal-card,
+.group-signal-empty{
+    background: #39343A;
+    border: 1px solid rgba(221, 188, 149, 0.22);
+    border-radius: 5px;
+    color: whitesmoke;
+    display: grid;
+    gap: 0.35rem;
+    min-height: 120px;
+    padding: 0.8rem;
+}
+
+.group-signal-card-header{
+    align-items: start;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.group-signal-card h3{
+    color: whitesmoke;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.group-signal-card-header span{
+    color: palegoldenrod;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.group-signal-card strong{
+    color: #54a7f8;
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.group-signal-card p,
+.group-signal-card small,
+.group-signal-empty{
+    color: #CDCDC0;
+    font-size: 0.78rem;
+    margin: 0;
+}
+
 .container {
     width: 100%;
     max-width: 1200px;

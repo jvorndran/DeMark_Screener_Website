@@ -123,6 +123,58 @@
             }).slice(0, 8);
         }
 
+        function buildGroupSignalSummary(rows, minimumCount) {
+            let activeThreshold = Math.max(minimumCount, 1);
+            let groups = {};
+
+            rows.forEach(function (row) {
+                let groupName = row.etf || 'Unclassified';
+                let buyMax = maxSignalCount(row, buyFields);
+                let sellMax = maxSignalCount(row, sellFields);
+
+                if (!groups[groupName]) {
+                    groups[groupName] = {
+                        name: groupName,
+                        total: 0,
+                        buyCount: 0,
+                        sellCount: 0,
+                        buyLeader: {ticker: null, count: 0},
+                        sellLeader: {ticker: null, count: 0}
+                    };
+                }
+
+                groups[groupName].total += 1;
+
+                if (buyMax >= activeThreshold) {
+                    groups[groupName].buyCount += 1;
+                }
+
+                if (sellMax >= activeThreshold) {
+                    groups[groupName].sellCount += 1;
+                }
+
+                if (buyMax > groups[groupName].buyLeader.count) {
+                    groups[groupName].buyLeader = {ticker: row.tick, count: buyMax};
+                }
+
+                if (sellMax > groups[groupName].sellLeader.count) {
+                    groups[groupName].sellLeader = {ticker: row.tick, count: sellMax};
+                }
+            });
+
+            return Object.values(groups).filter(function (group) {
+                return group.buyCount > 0 || group.sellCount > 0;
+            }).sort(function (a, b) {
+                let activeDiff = (b.buyCount + b.sellCount) - (a.buyCount + a.sellCount);
+
+                if (activeDiff !== 0) {
+                    return activeDiff;
+                }
+
+                return b.total - a.total;
+            }).slice(0, 8);
+        }
+
         $(document).ready(function () {
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                 if (settings.nTable.id !== 'demark-table') {
@@ -222,6 +274,51 @@
                 });
             }
 
+            function updateGroupSignalSummary(rows, minimumCount) {
+                let groups = buildGroupSignalSummary(rows, minimumCount);
+                let $grid = $('#group-signal-grid');
+
+                $grid.empty();
+                $('#group-signal-caption').text(groups.length ? 'Top ' + groups.length + ' groups by active signals' : 'No grouped signals');
+
+                if (!groups.length) {
+                    $('<div>')
+                        .addClass('group-signal-empty')
+                        .text('No sectors or countries have active signals under the current filters.')
+                        .appendTo($grid);
+                    return;
+                }
+
+                groups.forEach(function (group) {
+                    let netSignal = group.buyCount - group.sellCount;
+                    let bias = netSignal > 0 ? 'Buy bias' : netSignal < 0 ? 'Sell bias' : 'Balanced';
+                    let $card = $('<article>').addClass('group-signal-card');
+                    let $header = $('<div>').addClass('group-signal-card-header');
+
+                    $('<h3>').text(group.name).appendTo($header);
+                    $('<span>').text(bias).appendTo($header);
+                    $header.appendTo($card);
+
+                    $('<strong>')
+                        .text((group.buyCount + group.sellCount).toLocaleString())
+                        .appendTo($card);
+                    $('<p>')
+                        .text(group.total.toLocaleString() + ' symbols in the filtered table')
+                        .appendTo($card);
+                    $('<small>')
+                        .text('Buy ' + group.buyCount + ' / Sell ' + group.sellCount)
+                        .appendTo($card);
+                    $('<small>')
+                        .text('Leaders: ' +
+                            (group.buyLeader.ticker || '-') + ' buy ' + formatSignalCount(group.buyLeader.count) +
+                            ', ' +
+                            (group.sellLeader.ticker || '-') + ' sell ' + formatSignalCount(group.sellLeader.count))
+                        .appendTo($card);
+
+                    $card.appendTo($grid);
+                });
+            }
+
             function updateSignalSummary() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
@@ -239,6 +336,7 @@
                 $('#sell-signal-count').text(sellMatches.toLocaleString());
                 $('#active-direction').text(direction.charAt(0).toUpperCase() + direction.slice(1));
                 updateSignalShortlist(filteredRows, direction);
+                updateGroupSignalSummary(filteredRows, minimumCount);
             }
 
             $('#toggle-buy-columns').on('change', function () {
@@ -356,6 +454,14 @@
             <span id="shortlist-caption">Top active signals</span>
         </div>
         <ul id="signal-shortlist" class="shortlist-grid"></ul>
+    </div>
+
+    <div class="group-signal-panel">
+        <div class="group-signal-header">
+            <h2>Sector And Country Signals</h2>
+            <span id="group-signal-caption">Top groups by active signals</span>
+        </div>
+        <div id="group-signal-grid" class="group-signal-grid"></div>
     </div>
 
     <div class="dataTables-container">
