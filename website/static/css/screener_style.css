@@ -70,6 +70,34 @@ body {
     padding: 0.45rem 0.6rem;
 }
 
+.export-control{
+    display: grid;
+    gap: 0.2rem;
+}
+
+.export-control button{
+    border: 1px solid rgba(57, 52, 58, 0.25);
+    border-radius: 4px;
+    background: #363636;
+    color: whitesmoke;
+    cursor: pointer;
+    font-family: Typold, serif;
+    font-size: 0.9rem;
+    min-height: 2.4rem;
+    padding: 0 0.85rem;
+}
+
+.export-control button:hover{
+    background: #54a7f8;
+    color: #111;
+}
+
+#export-status{
+    color: var(--jet);
+    font-size: 0.72rem;
+    min-height: 1rem;
+}
+
 .signal-summary{
     display: grid;
     grid-template-columns: repeat(4, minmax(120px, 1fr));

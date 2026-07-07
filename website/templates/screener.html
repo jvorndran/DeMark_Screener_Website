@@ -81,6 +81,81 @@
             return Number.isInteger(count) ? count.toString() : count.toFixed(1);
         }
 
+        function csvValue(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+
+            let stringValue = value.toString();
+
+            if (/[",\n]/.test(stringValue)) {
+                return '"' + stringValue.replace(/"/g, '""') + '"';
+            }
+
+            return stringValue;
+        }
+
+        function formatExportNumber(value) {
+            let parsedValue = parseFloat(value);
+            return Number.isNaN(parsedValue) ? '' : formatSignalCount(parsedValue);
+        }
+
+        function buildExportRows(rows, direction, minimumCount) {
+            let activeFields = signalFieldsForDirection(direction);
+
+            return rows.map(function (row) {
+                let topSignal = strongestSignal(row, activeFields);
+                let topBuySignal = strongestSignal(row, buyFields);
+                let topSellSignal = strongestSignal(row, sellFields);
+
+                return {
+                    Name: row.name,
+                    Ticker: row.tick,
+                    Group: row.etf,
+                    Direction: direction,
+                    MinimumCount: minimumCount,
+                    TopSignal: topSignal.label,
+                    TopSignalCount: formatExportNumber(topSignal.count),
+                    TopBuySignal: topBuySignal.label,
+                    TopBuyCount: formatExportNumber(topBuySignal.count),
+                    TopSellSignal: topSellSignal.label,
+                    TopSellCount: formatExportNumber(topSellSignal.count),
+                    SeqBuyDaily: formatExportNumber(row.seq_buy_d),
+                    ComboBuyDaily: formatExportNumber(row.combo_buy_d),
+                    SeqBuyWeekly: formatExportNumber(row.seq_buy_w),
+                    ComboBuyWeekly: formatExportNumber(row.combo_buy_w),
+                    SeqBuy9139: formatExportNumber(row.seq_b_9139),
+                    ComboBuy9139: formatExportNumber(row.combo_b_9139),
+                    SeqSellDaily: formatExportNumber(row.seq_sell_d),
+                    ComboSellDaily: formatExportNumber(row.combo_sell_d),
+                    SeqSellWeekly: formatExportNumber(row.seq_sell_w),
+                    ComboSellWeekly: formatExportNumber(row.combo_sell_w),
+                    SeqSell9139: formatExportNumber(row.seq_s_9139),
+                    ComboSell9139: formatExportNumber(row.combo_s_9139)
+                };
+            });
+        }
+
+        function downloadExportRows(rows, filename) {
+            let headers = Object.keys(rows[0]);
+            let csvLines = [
+                headers.map(csvValue).join(',')
+            ].concat(rows.map(function (row) {
+                return headers.map(function (header) {
+                    return csvValue(row[header]);
+                }).join(',');
+            }));
+            let blob = new Blob([csvLines.join('\n')], {type: 'text/csv;charset=utf-8;'});
+            let link = document.createElement('a');
+
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
         function rowMatchesSignalFilter(row, minimumCount, direction) {
             let buyMax = maxSignalCount(row, buyFields);
             let sellMax = maxSignalCount(row, sellFields);
@@ -339,6 +414,25 @@
                 updateGroupSignalSummary(filteredRows, minimumCount);
             }
 
+            function exportFilteredRows() {
+                let minimumCount = parseInt($('#minimum-signal').val(), 10);
+                let direction = $('#signal-direction').val();
+                let filteredRows = table.rows({search: 'applied'}).data().toArray();
+                let exportRows = buildExportRows(filteredRows, direction, minimumCount);
+                let exportDate = new Date().toISOString().slice(0, 10);
+
+                if (!exportRows.length) {
+                    $('#export-status').text('No rows to export');
+                    return;
+                }
+
+                downloadExportRows(
+                    exportRows,
+                    'demark-screener-' + direction + '-min-' + minimumCount + '-' + exportDate + '.csv'
+                );
+                $('#export-status').text(exportRows.length.toLocaleString() + ' rows exported');
+            }
+
             $('#toggle-buy-columns').on('change', function () {
                 let isVisible = !$(this).is(':checked');
 
@@ -361,6 +455,8 @@
                 table.draw();
                 updateSignalSummary();
             });
+
+            $('#export-filtered-results').on('click', exportFilteredRows);
 
             table.on('draw', updateSignalSummary);
 
@@ -406,6 +502,11 @@
                         <option value="12">12+</option>
                         <option value="13">13+</option>
                     </select>
+                </div>
+
+                <div class="export-control">
+                    <button id="export-filtered-results" type="button">Export CSV</button>
+                    <span id="export-status"></span>
                 </div>
 
                 <div class="toggle-button">
