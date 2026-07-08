@@ -25,6 +25,14 @@
         let sellColumns = [9, 10, 11, 12, 13, 14];
         let buyFields = ['seq_buy_d', 'combo_buy_d', 'seq_buy_w', 'combo_buy_w', 'seq_b_9139', 'combo_b_9139'];
         let sellFields = ['seq_sell_d', 'combo_sell_d', 'seq_sell_w', 'combo_sell_w', 'seq_s_9139', 'combo_s_9139'];
+        let signalFamilies = {
+            all: buyFields.concat(sellFields),
+            daily: ['seq_buy_d', 'combo_buy_d', 'seq_sell_d', 'combo_sell_d'],
+            weekly: ['seq_buy_w', 'combo_buy_w', 'seq_sell_w', 'combo_sell_w'],
+            sequential: ['seq_buy_d', 'seq_buy_w', 'seq_b_9139', 'seq_sell_d', 'seq_sell_w', 'seq_s_9139'],
+            combo: ['combo_buy_d', 'combo_buy_w', 'combo_b_9139', 'combo_sell_d', 'combo_sell_w', 'combo_s_9139'],
+            'nine-thirteen-nine': ['seq_b_9139', 'combo_b_9139', 'seq_s_9139', 'combo_s_9139']
+        };
         let signalLabels = {
             seq_buy_d: 'Seq Buy Daily',
             combo_buy_d: 'Combo Buy Daily',
@@ -77,6 +85,28 @@
             return buyFields.concat(sellFields);
         }
 
+        function signalFieldsForFamily(family) {
+            return signalFamilies[family] || signalFamilies.all;
+        }
+
+        function intersectSignalFields(firstFields, secondFields) {
+            return firstFields.filter(function (field) {
+                return secondFields.indexOf(field) !== -1;
+            });
+        }
+
+        function signalFieldsForFilter(direction, family) {
+            return intersectSignalFields(signalFieldsForDirection(direction), signalFieldsForFamily(family));
+        }
+
+        function activeSignalThreshold(minimumCount, direction, family) {
+            if (minimumCount === 0 && direction === 'all' && family === 'all') {
+                return 0;
+            }
+
+            return Math.max(minimumCount, 1);
+        }
+
         function formatSignalCount(count) {
             return Number.isInteger(count) ? count.toString() : count.toFixed(1);
         }
@@ -100,8 +130,8 @@
             return Number.isNaN(parsedValue) ? '' : formatSignalCount(parsedValue);
         }
 
-        function buildExportRows(rows, direction, minimumCount) {
-            let activeFields = signalFieldsForDirection(direction);
+        function buildExportRows(rows, direction, minimumCount, family) {
+            let activeFields = signalFieldsForFilter(direction, family);
 
             return rows.map(function (row) {
                 let topSignal = strongestSignal(row, activeFields);
@@ -113,6 +143,7 @@
                     Ticker: row.tick,
                     Group: row.etf,
                     Direction: direction,
+                    SignalFamily: family,
                     MinimumCount: minimumCount,
                     TopSignal: topSignal.label,
                     TopSignalCount: formatExportNumber(topSignal.count),
@@ -156,27 +187,29 @@
             URL.revokeObjectURL(link.href);
         }
 
-        function rowMatchesSignalFilter(row, minimumCount, direction) {
-            let buyMax = maxSignalCount(row, buyFields);
-            let sellMax = maxSignalCount(row, sellFields);
+        function rowMatchesSignalFilter(row, minimumCount, direction, family) {
+            let familyFields = signalFieldsForFamily(family);
+            let buyMax = maxSignalCount(row, intersectSignalFields(buyFields, familyFields));
+            let sellMax = maxSignalCount(row, intersectSignalFields(sellFields, familyFields));
+            let threshold = activeSignalThreshold(minimumCount, direction, family);
 
-            if (minimumCount === 0 && direction === 'all') {
+            if (threshold === 0) {
                 return true;
             }
             if (direction === 'buy') {
-                return buyMax >= minimumCount;
+                return buyMax >= threshold;
             }
             if (direction === 'sell') {
-                return sellMax >= minimumCount;
+                return sellMax >= threshold;
             }
             if (direction === 'both') {
-                return buyMax >= minimumCount && sellMax >= minimumCount;
+                return buyMax >= threshold && sellMax >= threshold;
             }
-            return buyMax >= minimumCount || sellMax >= minimumCount;
+            return buyMax >= threshold || sellMax >= threshold;
         }
 
-        function buildSignalShortlist(rows, direction) {
-            let fields = signalFieldsForDirection(direction);
+        function buildSignalShortlist(rows, direction, family) {
+            let fields = signalFieldsForFilter(direction, family);
 
             return rows.map(function (row) {
                 let strongest = strongestSignal(row, fields);
@@ -198,14 +231,17 @@
             }).slice(0, 8);
         }
 
-        function buildGroupSignalSummary(rows, minimumCount) {
-            let activeThreshold = Math.max(minimumCount, 1);
+        function buildGroupSignalSummary(rows, minimumCount, family) {
+            let activeThreshold = activeSignalThreshold(minimumCount, 'buy', family);
+            let familyFields = signalFieldsForFamily(family);
+            let groupBuyFields = intersectSignalFields(buyFields, familyFields);
+            let groupSellFields = intersectSignalFields(sellFields, familyFields);
             let groups = {};
 
             rows.forEach(function (row) {
                 let groupName = row.etf || 'Unclassified';
-                let buyMax = maxSignalCount(row, buyFields);
-                let sellMax = maxSignalCount(row, sellFields);
+                let buyMax = maxSignalCount(row, groupBuyFields);
+                let sellMax = maxSignalCount(row, groupSellFields);
 
                 if (!groups[groupName]) {
                     groups[groupName] = {
@@ -258,9 +294,10 @@
 
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
+                let family = $('#signal-family').val();
                 let row = settings.aoData[dataIndex]._aData;
 
-                return rowMatchesSignalFilter(row, minimumCount, direction);
+                return rowMatchesSignalFilter(row, minimumCount, direction, family);
             });
 
             let table = $('#demark-table').DataTable({
@@ -309,8 +346,8 @@
 
             });
 
-            function updateSignalShortlist(rows, direction) {
-                let shortlist = buildSignalShortlist(rows, direction);
+            function updateSignalShortlist(rows, direction, family) {
+                let shortlist = buildSignalShortlist(rows, direction, family);
                 let $list = $('#signal-shortlist');
 
                 $list.empty();
@@ -349,8 +386,8 @@
                 });
             }
 
-            function updateGroupSignalSummary(rows, minimumCount) {
-                let groups = buildGroupSignalSummary(rows, minimumCount);
+            function updateGroupSignalSummary(rows, minimumCount, family) {
+                let groups = buildGroupSignalSummary(rows, minimumCount, family);
                 let $grid = $('#group-signal-grid');
 
                 $grid.empty();
@@ -397,28 +434,34 @@
             function updateSignalSummary() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
+                let family = $('#signal-family').val();
+                let familyLabel = $('#signal-family option:selected').text();
+                let threshold = activeSignalThreshold(minimumCount, direction, family);
                 let filteredCount = table.rows({search: 'applied'}).count();
                 let filteredRows = table.rows({search: 'applied'}).data().toArray();
+                let buySummaryFields = intersectSignalFields(buyFields, signalFieldsForFamily(family));
+                let sellSummaryFields = intersectSignalFields(sellFields, signalFieldsForFamily(family));
                 let buyMatches = count_data.filter(function (row) {
-                    return maxSignalCount(row, buyFields) >= minimumCount;
+                    return maxSignalCount(row, buySummaryFields) >= threshold;
                 }).length;
                 let sellMatches = count_data.filter(function (row) {
-                    return maxSignalCount(row, sellFields) >= minimumCount;
+                    return maxSignalCount(row, sellSummaryFields) >= threshold;
                 }).length;
 
                 $('#results-count').text(filteredCount.toLocaleString() + ' of ' + count_data.length.toLocaleString());
                 $('#buy-signal-count').text(buyMatches.toLocaleString());
                 $('#sell-signal-count').text(sellMatches.toLocaleString());
-                $('#active-direction').text(direction.charAt(0).toUpperCase() + direction.slice(1));
-                updateSignalShortlist(filteredRows, direction);
-                updateGroupSignalSummary(filteredRows, minimumCount);
+                $('#active-direction').text(direction.charAt(0).toUpperCase() + direction.slice(1) + ' / ' + familyLabel);
+                updateSignalShortlist(filteredRows, direction, family);
+                updateGroupSignalSummary(filteredRows, minimumCount, family);
             }
 
             function exportFilteredRows() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
+                let family = $('#signal-family').val();
                 let filteredRows = table.rows({search: 'applied'}).data().toArray();
-                let exportRows = buildExportRows(filteredRows, direction, minimumCount);
+                let exportRows = buildExportRows(filteredRows, direction, minimumCount, family);
                 let exportDate = new Date().toISOString().slice(0, 10);
 
                 if (!exportRows.length) {
@@ -428,7 +471,7 @@
 
                 downloadExportRows(
                     exportRows,
-                    'demark-screener-' + direction + '-min-' + minimumCount + '-' + exportDate + '.csv'
+                    'demark-screener-' + direction + '-' + family + '-min-' + minimumCount + '-' + exportDate + '.csv'
                 );
                 $('#export-status').text(exportRows.length.toLocaleString() + ' rows exported');
             }
@@ -451,7 +494,7 @@
 
             });
 
-            $('#signal-direction, #minimum-signal').on('change', function () {
+            $('#signal-direction, #minimum-signal, #signal-family').on('change', function () {
                 table.draw();
                 updateSignalSummary();
             });
@@ -501,6 +544,18 @@
                         <option value="9">9+</option>
                         <option value="12">12+</option>
                         <option value="13">13+</option>
+                    </select>
+                </div>
+
+                <div class="signal-control">
+                    <span>Signal Family</span>
+                    <select id="signal-family">
+                        <option value="all">All Families</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="sequential">Sequential</option>
+                        <option value="combo">Combo</option>
+                        <option value="nine-thirteen-nine">9-13-9</option>
                     </select>
                 </div>
 
