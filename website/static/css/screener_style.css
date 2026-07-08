@@ -235,6 +235,97 @@ body {
     grid-template-columns: 1fr;
 }
 
+.confluence-panel{
+    background: #2f2b31;
+    border: 1px solid rgba(221, 188, 149, 0.34);
+    border-radius: 6px;
+    margin: 0 1rem 1rem;
+    padding: 0.85rem 1rem 1rem;
+}
+
+.confluence-header{
+    align-items: baseline;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.confluence-header h2{
+    color: whitesmoke;
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.confluence-header span{
+    color: #CDCDC0;
+    font-size: 0.82rem;
+}
+
+.confluence-grid{
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.confluence-card,
+.confluence-empty{
+    background: #39343A;
+    border: 1px solid rgba(221, 188, 149, 0.22);
+    border-radius: 5px;
+    color: whitesmoke;
+    display: grid;
+    gap: 0.3rem;
+    min-height: 118px;
+    padding: 0.8rem;
+}
+
+.confluence-card--buy{
+    border-left: 4px solid #5ed18d;
+}
+
+.confluence-card--sell{
+    border-left: 4px solid #f07178;
+}
+
+.confluence-card-header{
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.confluence-card-header a{
+    color: palegoldenrod;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.confluence-card-header span{
+    color: #54a7f8;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.confluence-card strong{
+    color: whitesmoke;
+    font-size: 0.88rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.confluence-card p,
+.confluence-card small,
+.confluence-empty{
+    color: #CDCDC0;
+    font-size: 0.78rem;
+    margin: 0;
+}
+
 .group-signal-panel{
     background: #2f2b31;
     border: 1px solid rgba(221, 188, 149, 0.3);

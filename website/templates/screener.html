@@ -33,6 +33,14 @@
             combo: ['combo_buy_d', 'combo_buy_w', 'combo_b_9139', 'combo_sell_d', 'combo_sell_w', 'combo_s_9139'],
             'nine-thirteen-nine': ['seq_b_9139', 'combo_b_9139', 'seq_s_9139', 'combo_s_9139']
         };
+        let confluencePairs = [
+            {label: 'Daily Buy', direction: 'buy', seqField: 'seq_buy_d', comboField: 'combo_buy_d'},
+            {label: 'Weekly Buy', direction: 'buy', seqField: 'seq_buy_w', comboField: 'combo_buy_w'},
+            {label: '9-13-9 Buy', direction: 'buy', seqField: 'seq_b_9139', comboField: 'combo_b_9139'},
+            {label: 'Daily Sell', direction: 'sell', seqField: 'seq_sell_d', comboField: 'combo_sell_d'},
+            {label: 'Weekly Sell', direction: 'sell', seqField: 'seq_sell_w', comboField: 'combo_sell_w'},
+            {label: '9-13-9 Sell', direction: 'sell', seqField: 'seq_s_9139', comboField: 'combo_s_9139'}
+        ];
         let signalLabels = {
             seq_buy_d: 'Seq Buy Daily',
             combo_buy_d: 'Combo Buy Daily',
@@ -231,6 +239,39 @@
             }).slice(0, 8);
         }
 
+        function buildConfluenceWatch(rows, minimumCount) {
+            let threshold = Math.max(minimumCount, 1);
+            let confluenceRows = [];
+
+            rows.forEach(function (row) {
+                confluencePairs.forEach(function (pair) {
+                    let sequentialCount = signalValue(row, pair.seqField);
+                    let comboCount = signalValue(row, pair.comboField);
+
+                    if (sequentialCount >= threshold && comboCount >= threshold) {
+                        confluenceRows.push({
+                            name: row.name,
+                            ticker: row.tick,
+                            group: row.etf,
+                            label: pair.label,
+                            direction: pair.direction,
+                            sequentialCount: sequentialCount,
+                            comboCount: comboCount,
+                            score: sequentialCount + comboCount
+                        });
+                    }
+                });
+            });
+
+            return confluenceRows.sort(function (a, b) {
+                if (b.score !== a.score) {
+                    return b.score - a.score;
+                }
+
+                return a.ticker.localeCompare(b.ticker);
+            }).slice(0, 6);
+        }
+
         function buildGroupSignalSummary(rows, minimumCount, family) {
             let activeThreshold = activeSignalThreshold(minimumCount, 'buy', family);
             let familyFields = signalFieldsForFamily(family);
@@ -386,6 +427,44 @@
                 });
             }
 
+            function updateConfluenceWatch(rows, minimumCount) {
+                let confluenceRows = buildConfluenceWatch(rows, minimumCount);
+                let $grid = $('#confluence-grid');
+
+                $grid.empty();
+                $('#confluence-caption').text(confluenceRows.length ? 'Top ' + confluenceRows.length + ' matching setup pairs' : 'No matching setup pairs');
+
+                if (!confluenceRows.length) {
+                    $('<div>')
+                        .addClass('confluence-empty')
+                        .text('No sequential and combo pairs meet the current table filters.')
+                        .appendTo($grid);
+                    return;
+                }
+
+                confluenceRows.forEach(function (row) {
+                    let $card = $('<article>').addClass('confluence-card confluence-card--' + row.direction);
+                    let $header = $('<div>').addClass('confluence-card-header');
+                    let $link = $('<a>')
+                        .attr('href', '/screener/' + encodeURIComponent(row.ticker))
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener')
+                        .text(row.ticker);
+
+                    $link.appendTo($header);
+                    $('<span>').text(row.label).appendTo($header);
+                    $header.appendTo($card);
+
+                    $('<strong>').text(row.name).appendTo($card);
+                    $('<p>').text(row.group).appendTo($card);
+                    $('<small>')
+                        .text('Sequential ' + formatSignalCount(row.sequentialCount) + ' / Combo ' + formatSignalCount(row.comboCount))
+                        .appendTo($card);
+
+                    $card.appendTo($grid);
+                });
+            }
+
             function updateGroupSignalSummary(rows, minimumCount, family) {
                 let groups = buildGroupSignalSummary(rows, minimumCount, family);
                 let $grid = $('#group-signal-grid');
@@ -453,6 +532,7 @@
                 $('#sell-signal-count').text(sellMatches.toLocaleString());
                 $('#active-direction').text(direction.charAt(0).toUpperCase() + direction.slice(1) + ' / ' + familyLabel);
                 updateSignalShortlist(filteredRows, direction, family);
+                updateConfluenceWatch(filteredRows, minimumCount);
                 updateGroupSignalSummary(filteredRows, minimumCount, family);
             }
 
@@ -610,6 +690,14 @@
             <span id="shortlist-caption">Top active signals</span>
         </div>
         <ul id="signal-shortlist" class="shortlist-grid"></ul>
+    </div>
+
+    <div class="confluence-panel">
+        <div class="confluence-header">
+            <h2>Sequential And Combo Confluence</h2>
+            <span id="confluence-caption">Top matching setup pairs</span>
+        </div>
+        <div id="confluence-grid" class="confluence-grid"></div>
     </div>
 
     <div class="group-signal-panel">
