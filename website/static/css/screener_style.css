@@ -127,6 +127,58 @@ body {
     text-transform: uppercase;
 }
 
+.signal-preset-panel{
+    align-items: center;
+    background: #2f2b31;
+    border: 1px solid rgba(84, 167, 248, 0.3);
+    border-radius: 6px;
+    color: whitesmoke;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 0 1rem 1rem;
+    padding: 0.85rem 1rem;
+}
+
+.signal-preset-panel h2{
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.signal-preset-panel span{
+    color: #CDCDC0;
+    font-size: 0.82rem;
+}
+
+.signal-preset-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    justify-content: flex-end;
+}
+
+.signal-preset-button{
+    background: #39343A;
+    border: 1px solid rgba(221, 188, 149, 0.24);
+    border-radius: 4px;
+    color: whitesmoke;
+    cursor: pointer;
+    font-family: Typold, serif;
+    font-size: 0.82rem;
+    min-height: 2.2rem;
+    padding: 0 0.7rem;
+}
+
+.signal-preset-button:hover{
+    border-color: #54a7f8;
+    color: palegoldenrod;
+}
+
+.signal-preset-button--muted{
+    color: #CDCDC0;
+}
+
 .shortlist-panel{
     background: #2f2b31;
     border: 1px solid rgba(84, 167, 248, 0.32);
@@ -730,6 +782,15 @@ input[type=submit] {
 }
 
 @media (max-width: 600px) {
+    .signal-preset-panel{
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .signal-preset-actions{
+        justify-content: flex-start;
+    }
+
     .shortlist-header{
         align-items: flex-start;
         flex-direction: column;

@@ -55,6 +55,53 @@
             seq_s_9139: 'Seq 9-13-9 Sell',
             combo_s_9139: 'Combo 9-13-9 Sell'
         };
+        let signalPresets = {
+            completedBuys: {
+                direction: 'buy',
+                minimumCount: '13',
+                family: 'all',
+                search: '',
+                showBuy: true,
+                showSell: false,
+                status: 'Showing completed buy countdowns'
+            },
+            completedSells: {
+                direction: 'sell',
+                minimumCount: '13',
+                family: 'all',
+                search: '',
+                showBuy: false,
+                showSell: true,
+                status: 'Showing completed sell countdowns'
+            },
+            weeklySetups: {
+                direction: 'all',
+                minimumCount: '8',
+                family: 'weekly',
+                search: '',
+                showBuy: true,
+                showSell: true,
+                status: 'Showing weekly setups near completion'
+            },
+            bothSides: {
+                direction: 'both',
+                minimumCount: '8',
+                family: 'all',
+                search: '',
+                showBuy: true,
+                showSell: true,
+                status: 'Showing symbols with active buy and sell pressure'
+            },
+            reset: {
+                direction: 'all',
+                minimumCount: '0',
+                family: 'all',
+                search: '',
+                showBuy: true,
+                showSell: false,
+                status: 'Preset cleared'
+            }
+        };
 
         function signalValue(row, field) {
             let value = parseFloat(row[field]);
@@ -556,6 +603,24 @@
                 $('#export-status').text(exportRows.length.toLocaleString() + ' rows exported');
             }
 
+            function applySignalPreset(presetKey) {
+                let preset = signalPresets[presetKey];
+
+                if (!preset) {
+                    return;
+                }
+
+                $('#signal-direction').val(preset.direction);
+                $('#minimum-signal').val(preset.minimumCount);
+                $('#signal-family').val(preset.family);
+                $('#myInput').val(preset.search);
+                $('#toggle-buy-columns').prop('checked', !preset.showBuy).trigger('change');
+                $('#toggle-sell-columns').prop('checked', !preset.showSell).trigger('change');
+                $('#preset-status').text(preset.status);
+                table.column(2).search(preset.search).draw();
+                updateSignalSummary();
+            }
+
             $('#toggle-buy-columns').on('change', function () {
                 let isVisible = !$(this).is(':checked');
 
@@ -580,6 +645,10 @@
             });
 
             $('#export-filtered-results').on('click', exportFilteredRows);
+
+            $('.signal-preset-button').on('click', function () {
+                applySignalPreset($(this).data('preset'));
+            });
 
             table.on('draw', updateSignalSummary);
 
@@ -681,6 +750,20 @@
         <div>
             <span class="summary-label">Direction</span>
             <strong id="active-direction">All</strong>
+        </div>
+    </div>
+
+    <div class="signal-preset-panel">
+        <div>
+            <h2>Signal Presets</h2>
+            <span id="preset-status">Choose a preset to reframe the screener</span>
+        </div>
+        <div class="signal-preset-actions">
+            <button class="signal-preset-button" data-preset="completedBuys" type="button">Completed Buys</button>
+            <button class="signal-preset-button" data-preset="completedSells" type="button">Completed Sells</button>
+            <button class="signal-preset-button" data-preset="weeklySetups" type="button">Weekly Setups</button>
+            <button class="signal-preset-button" data-preset="bothSides" type="button">Both Sides</button>
+            <button class="signal-preset-button signal-preset-button--muted" data-preset="reset" type="button">Reset</button>
         </div>
     </div>
 
