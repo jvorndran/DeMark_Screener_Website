@@ -603,6 +603,44 @@
                 $('#export-status').text(exportRows.length.toLocaleString() + ' rows exported');
             }
 
+            function copyTextToClipboard(text) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    return navigator.clipboard.writeText(text);
+                }
+
+                let textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.setAttribute('readonly', '');
+                textArea.style.position = 'absolute';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                return Promise.resolve();
+            }
+
+            function copyFilteredTickers() {
+                let filteredRows = table.rows({search: 'applied'}).data().toArray();
+                let tickers = filteredRows.map(function (row) {
+                    return row.tick;
+                }).filter(Boolean);
+
+                if (!tickers.length) {
+                    $('#export-status').text('No tickers to copy');
+                    return;
+                }
+
+                copyTextToClipboard(tickers.join(', '))
+                    .then(function () {
+                        $('#export-status').text(tickers.length.toLocaleString() + ' tickers copied');
+                    })
+                    .catch(function () {
+                        $('#export-status').text('Unable to copy tickers');
+                    });
+            }
+
             function applySignalPreset(presetKey) {
                 let preset = signalPresets[presetKey];
 
@@ -645,6 +683,7 @@
             });
 
             $('#export-filtered-results').on('click', exportFilteredRows);
+            $('#copy-filtered-tickers').on('click', copyFilteredTickers);
 
             $('.signal-preset-button').on('click', function () {
                 applySignalPreset($(this).data('preset'));
@@ -709,7 +748,10 @@
                 </div>
 
                 <div class="export-control">
-                    <button id="export-filtered-results" type="button">Export CSV</button>
+                    <div class="export-actions">
+                        <button id="export-filtered-results" type="button">Export CSV</button>
+                        <button id="copy-filtered-tickers" type="button">Copy Tickers</button>
+                    </div>
                     <span id="export-status"></span>
                 </div>
 
