@@ -55,6 +55,12 @@
             seq_s_9139: 'Seq 9-13-9 Sell',
             combo_s_9139: 'Combo 9-13-9 Sell'
         };
+        let signalStages = [
+            {key: 'building', label: 'Building', detail: 'Counts 1-7', minimum: 1, maximum: 7},
+            {key: 'setup', label: 'Setup Zone', detail: 'Counts 8-9', minimum: 8, maximum: 9},
+            {key: 'countdown', label: 'Countdown', detail: 'Counts 10-12', minimum: 10, maximum: 12},
+            {key: 'complete', label: 'Complete', detail: 'Count 13+', minimum: 13, maximum: Infinity}
+        ];
         let signalPresets = {
             completedBuys: {
                 direction: 'buy',
@@ -374,6 +380,38 @@
             }).slice(0, 8);
         }
 
+        function buildSignalStageSummary(rows, family) {
+            let familyFields = signalFieldsForFamily(family);
+            let stageSummary = signalStages.map(function (stage) {
+                return Object.assign({}, stage, {buyCount: 0, sellCount: 0});
+            });
+
+            function recordStage(count, direction) {
+                if (count <= 0) {
+                    return;
+                }
+
+                let stage = stageSummary.find(function (candidate) {
+                    return count >= candidate.minimum && count <= candidate.maximum;
+                });
+
+                if (stage) {
+                    stage[direction + 'Count'] += 1;
+                }
+            }
+
+            rows.forEach(function (row) {
+                recordStage(maxSignalCount(row, intersectSignalFields(buyFields, familyFields)), 'buy');
+                recordStage(maxSignalCount(row, intersectSignalFields(sellFields, familyFields)), 'sell');
+            });
+
+            return {
+                stages: stageSummary,
+                buyTotal: stageSummary.reduce(function (total, stage) { return total + stage.buyCount; }, 0),
+                sellTotal: stageSummary.reduce(function (total, stage) { return total + stage.sellCount; }, 0)
+            };
+        }
+
         $(document).ready(function () {
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                 if (settings.nTable.id !== 'demark-table') {
@@ -557,6 +595,46 @@
                 });
             }
 
+            function updateSignalStageSummary(rows, family) {
+                let summary = buildSignalStageSummary(rows, family);
+                let $grid = $('#signal-stage-grid');
+
+                $grid.empty();
+                $('#signal-stage-caption').text(
+                    summary.buyTotal.toLocaleString() + ' buy / ' +
+                    summary.sellTotal.toLocaleString() + ' sell signals in view'
+                );
+
+                summary.stages.forEach(function (stage) {
+                    let buyPercent = summary.buyTotal ? Math.round((stage.buyCount / summary.buyTotal) * 100) : 0;
+                    let sellPercent = summary.sellTotal ? Math.round((stage.sellCount / summary.sellTotal) * 100) : 0;
+                    let $card = $('<article>').addClass('signal-stage-card signal-stage-card--' + stage.key);
+                    let $header = $('<div>').addClass('signal-stage-card-header');
+                    let $buyRow = $('<div>').addClass('signal-stage-row');
+                    let $sellRow = $('<div>').addClass('signal-stage-row');
+
+                    $('<h3>').text(stage.label).appendTo($header);
+                    $('<span>').text(stage.detail).appendTo($header);
+                    $header.appendTo($card);
+
+                    $('<span>').addClass('signal-stage-label signal-stage-label--buy').text('Buy').appendTo($buyRow);
+                    $('<div>').addClass('signal-stage-track')
+                        .append($('<span>').addClass('signal-stage-fill signal-stage-fill--buy').css('width', buyPercent + '%'))
+                        .appendTo($buyRow);
+                    $('<strong>').text(stage.buyCount).attr('title', buyPercent + '% of buy signals').appendTo($buyRow);
+
+                    $('<span>').addClass('signal-stage-label signal-stage-label--sell').text('Sell').appendTo($sellRow);
+                    $('<div>').addClass('signal-stage-track')
+                        .append($('<span>').addClass('signal-stage-fill signal-stage-fill--sell').css('width', sellPercent + '%'))
+                        .appendTo($sellRow);
+                    $('<strong>').text(stage.sellCount).attr('title', sellPercent + '% of sell signals').appendTo($sellRow);
+
+                    $buyRow.appendTo($card);
+                    $sellRow.appendTo($card);
+                    $card.appendTo($grid);
+                });
+            }
+
             function updateSignalSummary() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
@@ -581,6 +659,7 @@
                 updateSignalShortlist(filteredRows, direction, family);
                 updateConfluenceWatch(filteredRows, minimumCount);
                 updateGroupSignalSummary(filteredRows, minimumCount, family);
+                updateSignalStageSummary(filteredRows, family);
             }
 
             function exportFilteredRows() {
@@ -807,6 +886,14 @@
             <button class="signal-preset-button" data-preset="bothSides" type="button">Both Sides</button>
             <button class="signal-preset-button signal-preset-button--muted" data-preset="reset" type="button">Reset</button>
         </div>
+    </div>
+
+    <div class="signal-stage-panel">
+        <div class="signal-stage-header">
+            <h2>Countdown Stage Distribution</h2>
+            <span id="signal-stage-caption">Signal progress across the filtered table</span>
+        </div>
+        <div id="signal-stage-grid" class="signal-stage-grid"></div>
     </div>
 
     <div class="shortlist-panel">

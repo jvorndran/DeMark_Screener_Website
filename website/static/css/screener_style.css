@@ -185,6 +185,123 @@ body {
     color: #CDCDC0;
 }
 
+.signal-stage-panel{
+    background: #302d31;
+    border: 1px solid rgba(221, 188, 149, 0.3);
+    border-radius: 6px;
+    margin: 0 1rem 1rem;
+    padding: 0.85rem 1rem 1rem;
+}
+
+.signal-stage-header{
+    align-items: baseline;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.signal-stage-header h2{
+    color: whitesmoke;
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.signal-stage-header span{
+    color: #CDCDC0;
+    font-size: 0.82rem;
+}
+
+.signal-stage-grid{
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+}
+
+.signal-stage-card{
+    background: #39343A;
+    border: 1px solid rgba(221, 188, 149, 0.22);
+    border-radius: 5px;
+    display: grid;
+    gap: 0.65rem;
+    padding: 0.8rem;
+}
+
+.signal-stage-card--complete{
+    border-color: rgba(240, 230, 140, 0.55);
+}
+
+.signal-stage-card-header{
+    align-items: baseline;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+.signal-stage-card-header h3{
+    background: none;
+    color: whitesmoke;
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: left;
+}
+
+.signal-stage-card-header span{
+    color: #CDCDC0;
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.signal-stage-row{
+    align-items: center;
+    display: grid;
+    gap: 0.45rem;
+    grid-template-columns: 30px minmax(50px, 1fr) 28px;
+}
+
+.signal-stage-label{
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.signal-stage-label--buy{
+    color: #78b9f8;
+}
+
+.signal-stage-label--sell{
+    color: #ef9999;
+}
+
+.signal-stage-track{
+    background: #252226;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.signal-stage-fill{
+    border-radius: inherit;
+    display: block;
+    height: 100%;
+    min-width: 0;
+}
+
+.signal-stage-fill--buy{
+    background: #54a7f8;
+}
+
+.signal-stage-fill--sell{
+    background: #d96969;
+}
+
+.signal-stage-row strong{
+    color: whitesmoke;
+    font-size: 0.8rem;
+    text-align: right;
+}
+
 .shortlist-panel{
     background: #2f2b31;
     border: 1px solid rgba(84, 167, 248, 0.32);
@@ -785,6 +902,10 @@ input[type=submit] {
     .signal-summary{
         grid-template-columns: repeat(2, minmax(120px, 1fr));
     }
+
+    .signal-stage-grid{
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+    }
 }
 
 @media (max-width: 600px) {
@@ -803,6 +924,15 @@ input[type=submit] {
     }
 
     .shortlist-grid{
+        grid-template-columns: 1fr;
+    }
+
+    .signal-stage-header{
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .signal-stage-grid{
         grid-template-columns: 1fr;
     }
 }
