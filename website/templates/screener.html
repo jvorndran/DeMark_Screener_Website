@@ -61,6 +61,13 @@
             {key: 'countdown', label: 'Countdown', detail: 'Counts 10-12', minimum: 10, maximum: 12},
             {key: 'complete', label: 'Complete', detail: 'Count 13+', minimum: 13, maximum: Infinity}
         ];
+        let signalMatrixFamilies = [
+            {key: 'daily', label: 'Daily'},
+            {key: 'weekly', label: 'Weekly'},
+            {key: 'sequential', label: 'Sequential'},
+            {key: 'combo', label: 'Combo'},
+            {key: 'nine-thirteen-nine', label: '9-13-9'}
+        ];
         let signalPresets = {
             completedBuys: {
                 direction: 'buy',
@@ -412,6 +419,33 @@
             };
         }
 
+        function buildSignalFamilyMatrix(rows, minimumCount) {
+            let threshold = Math.max(minimumCount, 1);
+            let matrix = signalMatrixFamilies.map(function (family) {
+                let familyFields = signalFieldsForFamily(family.key);
+                let familyBuyFields = intersectSignalFields(buyFields, familyFields);
+                let familySellFields = intersectSignalFields(sellFields, familyFields);
+
+                return {
+                    key: family.key,
+                    label: family.label,
+                    buyCount: rows.filter(function (row) {
+                        return maxSignalCount(row, familyBuyFields) >= threshold;
+                    }).length,
+                    sellCount: rows.filter(function (row) {
+                        return maxSignalCount(row, familySellFields) >= threshold;
+                    }).length
+                };
+            });
+
+            return {
+                rows: matrix,
+                maximum: matrix.reduce(function (maximum, family) {
+                    return Math.max(maximum, family.buyCount, family.sellCount);
+                }, 0)
+            };
+        }
+
         $(document).ready(function () {
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                 if (settings.nTable.id !== 'demark-table') {
@@ -635,6 +669,39 @@
                 });
             }
 
+            function updateSignalFamilyMatrix(rows, minimumCount) {
+                let matrix = buildSignalFamilyMatrix(rows, minimumCount);
+                let $grid = $('#signal-family-matrix-grid');
+
+                $grid.empty();
+                $('#signal-family-matrix-caption').text(
+                    'Active rows at count ' + Math.max(minimumCount, 1) + '+; choose a cell to filter'
+                );
+
+                matrix.rows.forEach(function (family) {
+                    let $row = $('<div>').addClass('signal-family-matrix-row');
+
+                    $('<strong>').text(family.label).appendTo($row);
+
+                    ['buy', 'sell'].forEach(function (direction) {
+                        let count = family[direction + 'Count'];
+                        let intensity = matrix.maximum ? count / matrix.maximum : 0;
+                        let $button = $('<button>')
+                            .attr('type', 'button')
+                            .attr('data-family', family.key)
+                            .attr('data-direction', direction)
+                            .addClass('signal-family-matrix-cell signal-family-matrix-cell--' + direction)
+                            .css('--signal-intensity', intensity.toFixed(2));
+
+                        $('<span>').text(direction === 'buy' ? 'Buy' : 'Sell').appendTo($button);
+                        $('<strong>').text(count.toLocaleString()).appendTo($button);
+                        $button.appendTo($row);
+                    });
+
+                    $row.appendTo($grid);
+                });
+            }
+
             function updateSignalSummary() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
@@ -660,6 +727,7 @@
                 updateConfluenceWatch(filteredRows, minimumCount);
                 updateGroupSignalSummary(filteredRows, minimumCount, family);
                 updateSignalStageSummary(filteredRows, family);
+                updateSignalFamilyMatrix(filteredRows, minimumCount);
             }
 
             function exportFilteredRows() {
@@ -766,6 +834,16 @@
 
             $('.signal-preset-button').on('click', function () {
                 applySignalPreset($(this).data('preset'));
+            });
+
+            $('#signal-family-matrix-grid').on('click', '.signal-family-matrix-cell', function () {
+                let family = $(this).data('family');
+                let direction = $(this).data('direction');
+
+                $('#signal-family').val(family);
+                $('#signal-direction').val(direction);
+                $('#preset-status').text('Matrix filter: ' + $(this).find('span').text() + ' / ' + family);
+                table.draw();
             });
 
             table.on('draw', updateSignalSummary);
@@ -894,6 +972,19 @@
             <span id="signal-stage-caption">Signal progress across the filtered table</span>
         </div>
         <div id="signal-stage-grid" class="signal-stage-grid"></div>
+    </div>
+
+    <div class="signal-family-matrix-panel">
+        <div class="signal-family-matrix-header">
+            <h2>Signal Family Matrix</h2>
+            <span id="signal-family-matrix-caption">Active rows by family and direction</span>
+        </div>
+        <div class="signal-family-matrix-legend" aria-hidden="true">
+            <span>Family</span>
+            <span>Buy signals</span>
+            <span>Sell signals</span>
+        </div>
+        <div id="signal-family-matrix-grid" class="signal-family-matrix-grid"></div>
     </div>
 
     <div class="shortlist-panel">
