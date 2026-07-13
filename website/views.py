@@ -74,6 +74,63 @@ def check_if_etf(tick):
         return False
 
 
+def build_signal_snapshot(counts):
+    buy_signals = [
+        ('Sequential Buy Daily', counts.seq_buy_count_daily),
+        ('Combo Buy Daily', counts.combo_buy_count_daily),
+        ('Sequential Buy Weekly', counts.seq_buy_count_weekly),
+        ('Combo Buy Weekly', counts.combo_buy_count_weekly),
+        ('Sequential 9-13-9 Buy', counts.seq_buy_9_13_9),
+        ('Combo 9-13-9 Buy', counts.combo_buy_9_13_9)
+    ]
+    sell_signals = [
+        ('Sequential Sell Daily', counts.seq_sell_count_daily),
+        ('Combo Sell Daily', counts.combo_sell_count_daily),
+        ('Sequential Sell Weekly', counts.seq_sell_count_weekly),
+        ('Combo Sell Weekly', counts.combo_sell_count_weekly),
+        ('Sequential 9-13-9 Sell', counts.seq_sell_9_13_9),
+        ('Combo 9-13-9 Sell', counts.combo_sell_9_13_9)
+    ]
+
+    def strongest_signal(signals):
+        label, value = max(signals, key=lambda signal: int(signal[1] or 0))
+        return {'label': label, 'count': int(value or 0)}
+
+    strongest_buy = strongest_signal(buy_signals)
+    strongest_sell = strongest_signal(sell_signals)
+    leading_signal = strongest_buy if strongest_buy['count'] >= strongest_sell['count'] else strongest_sell
+    leading_count = leading_signal['count']
+
+    if strongest_buy['count'] > strongest_sell['count']:
+        bias = {'label': 'Buy leaning', 'detail': 'Buy counts lead the active setup', 'tone': 'buy'}
+    elif strongest_sell['count'] > strongest_buy['count']:
+        bias = {'label': 'Sell leaning', 'detail': 'Sell counts lead the active setup', 'tone': 'sell'}
+    elif leading_count > 0:
+        bias = {'label': 'Balanced pressure', 'detail': 'Buy and sell counts are tied', 'tone': 'balanced'}
+    else:
+        bias = {'label': 'No active setup', 'detail': 'No DeMark counts are currently active', 'tone': 'inactive'}
+
+    if leading_count >= 13:
+        stage = 'Complete'
+    elif leading_count >= 10:
+        stage = 'Countdown'
+    elif leading_count >= 8:
+        stage = 'Setup zone'
+    elif leading_count > 0:
+        stage = 'Building'
+    else:
+        stage = 'Inactive'
+
+    return {
+        'strongest_buy': strongest_buy,
+        'strongest_sell': strongest_sell,
+        'leading_signal': leading_signal,
+        'bias': bias,
+        'stage': stage,
+        'progress': min(round((leading_count / 13) * 100), 100)
+    }
+
+
 @app.route('/screener/<tick>')
 def stock_details(tick):
 
@@ -91,6 +148,8 @@ def stock_details(tick):
 
         row = Counts.query.filter_by(ticker=tick).first()
 
+        signal_snapshot = build_signal_snapshot(row)
+
         price = price.reset_index()
 
         price['Date'] = price['Date'].dt.date.astype(str)
@@ -105,7 +164,7 @@ def stock_details(tick):
 
         return render_template('stock_info.html', price_data=price_data, company_info=company_info, ticker=tick,
                                demark_counts=row, news=json_news, major_holders=major_holders,
-                               company_site=company_site)
+                               company_site=company_site, signal_snapshot=signal_snapshot)
 
 
 @app.route('/etf/<tick>')

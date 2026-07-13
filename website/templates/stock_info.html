@@ -119,6 +119,45 @@
 
 <br>
 <div class="container-fluid" id="background">
+  <section class="signal-snapshot" aria-labelledby="signal-snapshot-title">
+    <div class="signal-snapshot-header">
+      <div>
+        <a href="/" class="signal-snapshot-back">&larr; Back to screener</a>
+        <h2 id="signal-snapshot-title">DeMark Signal Snapshot</h2>
+        <p>Current countdown context for {{ ticker }}</p>
+      </div>
+      <span class="signal-bias signal-bias--{{ signal_snapshot.bias.tone }}">
+        {{ signal_snapshot.bias.label }}
+      </span>
+    </div>
+
+    <div class="signal-snapshot-grid">
+      <article>
+        <span>Strongest Buy</span>
+        <strong>{{ signal_snapshot.strongest_buy.count }}</strong>
+        <small>{{ signal_snapshot.strongest_buy.label }}</small>
+      </article>
+      <article>
+        <span>Strongest Sell</span>
+        <strong>{{ signal_snapshot.strongest_sell.count }}</strong>
+        <small>{{ signal_snapshot.strongest_sell.label }}</small>
+      </article>
+      <article>
+        <span>Leading Stage</span>
+        <strong>{{ signal_snapshot.stage }}</strong>
+        <small>{{ signal_snapshot.bias.detail }}</small>
+      </article>
+      <article class="signal-progress-card">
+        <span>Completion Progress</span>
+        <strong>{{ signal_snapshot.progress }}%</strong>
+        <small>{{ signal_snapshot.leading_signal.label }}</small>
+        <div class="signal-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ signal_snapshot.progress }}">
+          <span style="width: {{ signal_snapshot.progress }}%"></span>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <div class="row">
 
    <div id="chart" class="bg-image" style="opacity: 0.90;"></div>
