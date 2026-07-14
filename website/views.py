@@ -131,6 +131,77 @@ def build_signal_snapshot(counts):
     }
 
 
+def build_group_signal_watch(counts, limit=5):
+    peers = Counts.query.filter(
+        Counts.etf == counts.etf,
+        Counts.ticker != counts.ticker
+    ).all()
+
+    def signal_strengths(item):
+        buy_strength = max(
+            int(item.seq_buy_count_daily or 0),
+            int(item.combo_buy_count_daily or 0),
+            int(item.seq_buy_count_weekly or 0),
+            int(item.combo_buy_count_weekly or 0),
+            int(item.seq_buy_9_13_9 or 0),
+            int(item.combo_buy_9_13_9 or 0)
+        )
+        sell_strength = max(
+            int(item.seq_sell_count_daily or 0),
+            int(item.combo_sell_count_daily or 0),
+            int(item.seq_sell_count_weekly or 0),
+            int(item.combo_sell_count_weekly or 0),
+            int(item.seq_sell_9_13_9 or 0),
+            int(item.combo_sell_9_13_9 or 0)
+        )
+        return buy_strength, sell_strength
+
+    current_buy, current_sell = signal_strengths(counts)
+    current_direction = 'buy' if current_buy > current_sell else 'sell' if current_sell > current_buy else 'balanced'
+    active_peers = []
+
+    for peer in peers:
+        buy_strength, sell_strength = signal_strengths(peer)
+        strength = max(buy_strength, sell_strength)
+
+        if strength == 0:
+            continue
+
+        direction = 'buy' if buy_strength > sell_strength else 'sell' if sell_strength > buy_strength else 'balanced'
+
+        if strength >= 13:
+            stage = 'Complete'
+        elif strength >= 10:
+            stage = 'Countdown'
+        elif strength >= 8:
+            stage = 'Setup zone'
+        else:
+            stage = 'Building'
+
+        active_peers.append({
+            'ticker': peer.ticker,
+            'name': re.sub(r"(?<!\b)\w", lambda match: match.group().lower(), peer.name_of_company).replace('\\', ' '),
+            'buy_strength': buy_strength,
+            'sell_strength': sell_strength,
+            'strength': strength,
+            'direction': direction,
+            'direction_label': direction.title(),
+            'stage': stage,
+            'matches_bias': direction == current_direction
+        })
+
+    active_peers.sort(
+        key=lambda peer: (peer['matches_bias'], peer['strength'], peer['buy_strength'] + peer['sell_strength']),
+        reverse=True
+    )
+
+    return {
+        'group': counts.etf,
+        'active_count': len(active_peers),
+        'peers': active_peers[:limit]
+    }
+
+
 @app.route('/screener/<tick>')
 def stock_details(tick):
 
@@ -149,6 +220,7 @@ def stock_details(tick):
         row = Counts.query.filter_by(ticker=tick).first()
 
         signal_snapshot = build_signal_snapshot(row)
+        group_signal_watch = build_group_signal_watch(row)
 
         price = price.reset_index()
 
@@ -164,7 +236,8 @@ def stock_details(tick):
 
         return render_template('stock_info.html', price_data=price_data, company_info=company_info, ticker=tick,
                                demark_counts=row, news=json_news, major_holders=major_holders,
-                               company_site=company_site, signal_snapshot=signal_snapshot)
+                               company_site=company_site, signal_snapshot=signal_snapshot,
+                               group_signal_watch=group_signal_watch)
 
 
 @app.route('/etf/<tick>')

@@ -158,6 +158,37 @@
     </div>
   </section>
 
+  <section class="group-signal-watch" aria-labelledby="group-signal-watch-title">
+    <div class="group-signal-watch__header">
+      <div>
+        <h2 id="group-signal-watch-title">Group Signal Watch</h2>
+        <p>Strongest active {{ group_signal_watch.group }} setups, prioritizing {{ signal_snapshot.bias.label|lower }} peers.</p>
+      </div>
+      <span>{{ group_signal_watch.active_count }} active peer{{ '' if group_signal_watch.active_count == 1 else 's' }}</span>
+    </div>
+
+    {% if group_signal_watch.peers %}
+      <div class="group-signal-watch__grid">
+        {% for peer in group_signal_watch.peers %}
+          <a href="{{ url_for('stock_details', tick=peer.ticker) }}" class="group-signal-card group-signal-card--{{ peer.direction }}">
+            <div class="group-signal-card__title">
+              <strong>{{ peer.ticker }}</strong>
+              <span>{{ peer.direction_label }} {{ peer.strength }}</span>
+            </div>
+            <small>{{ peer.name }}</small>
+            <div class="group-signal-card__metrics">
+              <span>Buy <strong>{{ peer.buy_strength }}</strong></span>
+              <span>Sell <strong>{{ peer.sell_strength }}</strong></span>
+              <span>{{ peer.stage }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="group-signal-watch__empty">No other active signals are available in this group.</p>
+    {% endif %}
+  </section>
+
   <div class="row">
 
    <div id="chart" class="bg-image" style="opacity: 0.90;"></div>
