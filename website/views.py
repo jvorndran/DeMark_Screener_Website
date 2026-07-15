@@ -131,6 +131,57 @@ def build_signal_snapshot(counts):
     }
 
 
+def build_signal_completion_roadmap(counts):
+    signal_groups = {
+        'buy': [
+            ('Sequential Daily', counts.seq_buy_count_daily),
+            ('Combo Daily', counts.combo_buy_count_daily),
+            ('Sequential Weekly', counts.seq_buy_count_weekly),
+            ('Combo Weekly', counts.combo_buy_count_weekly)
+        ],
+        'sell': [
+            ('Sequential Daily', counts.seq_sell_count_daily),
+            ('Combo Daily', counts.combo_sell_count_daily),
+            ('Sequential Weekly', counts.seq_sell_count_weekly),
+            ('Combo Weekly', counts.combo_sell_count_weekly)
+        ]
+    }
+
+    def build_lane(label, value):
+        count = int(value or 0)
+        remaining = max(13 - count, 0)
+
+        if count >= 13:
+            stage = 'Complete'
+            detail = 'Countdown complete'
+        elif count >= 10:
+            stage = 'Countdown'
+            detail = f'{remaining} count{"s" if remaining != 1 else ""} to completion'
+        elif count >= 8:
+            stage = 'Setup zone'
+            detail = f'{remaining} counts to completion'
+        elif count > 0:
+            stage = 'Building'
+            detail = f'{8 - count} count{"s" if 8 - count != 1 else ""} to setup zone'
+        else:
+            stage = 'Inactive'
+            detail = 'No active countdown'
+
+        return {
+            'label': label,
+            'count': count,
+            'remaining': remaining,
+            'stage': stage,
+            'detail': detail,
+            'progress': min(round((count / 13) * 100), 100)
+        }
+
+    return {
+        direction: [build_lane(label, value) for label, value in signals]
+        for direction, signals in signal_groups.items()
+    }
+
+
 def build_group_signal_watch(counts, limit=5):
     peers = Counts.query.filter(
         Counts.etf == counts.etf,
@@ -220,6 +271,7 @@ def stock_details(tick):
         row = Counts.query.filter_by(ticker=tick).first()
 
         signal_snapshot = build_signal_snapshot(row)
+        signal_completion_roadmap = build_signal_completion_roadmap(row)
         group_signal_watch = build_group_signal_watch(row)
 
         price = price.reset_index()
@@ -237,6 +289,7 @@ def stock_details(tick):
         return render_template('stock_info.html', price_data=price_data, company_info=company_info, ticker=tick,
                                demark_counts=row, news=json_news, major_holders=major_holders,
                                company_site=company_site, signal_snapshot=signal_snapshot,
+                               signal_completion_roadmap=signal_completion_roadmap,
                                group_signal_watch=group_signal_watch)
 
 

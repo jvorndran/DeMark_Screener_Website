@@ -174,6 +174,99 @@ th {
     height: 100%;
 }
 
+.signal-roadmap {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(28, 39, 57, 0.18);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(25, 33, 48, 0.12);
+    margin: 0 1rem 2rem;
+    padding: 1.5rem;
+}
+
+.signal-roadmap__header,
+.signal-roadmap__lane-header,
+.signal-roadmap__lane-footer {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.signal-roadmap__header {
+    margin-bottom: 1rem;
+}
+
+.signal-roadmap__header h2 {
+    font-size: 2rem;
+    margin: 0 0 0.25rem;
+}
+
+.signal-roadmap__header p,
+.signal-roadmap__lane-footer small {
+    color: #5d6675;
+    margin: 0;
+}
+
+.signal-roadmap__header > span {
+    background: #e8edf5;
+    border-radius: 999px;
+    color: #334155;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 0.55rem 0.85rem;
+}
+
+.signal-roadmap__directions {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.signal-roadmap__direction {
+    background: #f7f9fc;
+    border: 1px solid #dce2ea;
+    border-radius: 7px;
+    padding: 1rem;
+}
+
+.signal-roadmap__direction h3 {
+    color: #172033;
+    font-size: 1.35rem;
+    margin: 0 0 0.8rem;
+}
+
+.signal-roadmap__lanes {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.signal-roadmap__lane-header span,
+.signal-roadmap__lane-footer span {
+    color: #334155;
+    font-weight: 700;
+}
+
+.signal-roadmap__track {
+    background: #dfe5ed;
+    border-radius: 999px;
+    height: 0.65rem;
+    margin: 0.4rem 0;
+    overflow: hidden;
+}
+
+.signal-roadmap__track span {
+    display: block;
+    height: 100%;
+}
+
+.signal-roadmap__direction--buy .signal-roadmap__track span {
+    background: linear-gradient(90deg, #55b98a, #16834f);
+}
+
+.signal-roadmap__direction--sell .signal-roadmap__track span {
+    background: linear-gradient(90deg, #ef8c94, #bd2634);
+}
+
 .group-signal-watch {
     background: rgba(255, 255, 255, 0.94);
     border: 1px solid rgba(28, 39, 57, 0.18);
@@ -281,6 +374,7 @@ th {
 
 @media screen and (max-width: 900px) {
     .signal-snapshot-grid,
+    .signal-roadmap__directions,
     .group-signal-watch__grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -288,12 +382,14 @@ th {
 
 @media screen and (max-width: 560px) {
     .signal-snapshot-header,
+    .signal-roadmap__header,
     .group-signal-watch__header {
         align-items: flex-start;
         flex-direction: column;
     }
 
     .signal-snapshot-grid,
+    .signal-roadmap__directions,
     .group-signal-watch__grid {
         grid-template-columns: 1fr;
     }

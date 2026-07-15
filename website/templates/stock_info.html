@@ -158,6 +158,41 @@
     </div>
   </section>
 
+  <section class="signal-roadmap" aria-labelledby="signal-roadmap-title">
+    <div class="signal-roadmap__header">
+      <div>
+        <h2 id="signal-roadmap-title">Signal Completion Roadmap</h2>
+        <p>Daily and weekly countdown lanes show the next milestone on the path to 13.</p>
+      </div>
+      <span>Target 13</span>
+    </div>
+
+    <div class="signal-roadmap__directions">
+      {% for direction, lanes in signal_completion_roadmap.items() %}
+        <div class="signal-roadmap__direction signal-roadmap__direction--{{ direction }}">
+          <h3>{{ direction|title }} countdowns</h3>
+          <div class="signal-roadmap__lanes">
+            {% for lane in lanes %}
+              <article>
+                <div class="signal-roadmap__lane-header">
+                  <strong>{{ lane.label }}</strong>
+                  <span>{{ lane.count }} / 13</span>
+                </div>
+                <div class="signal-roadmap__track" role="progressbar" aria-valuemin="0" aria-valuemax="13" aria-valuenow="{{ [lane.count, 13]|min }}">
+                  <span style="width: {{ lane.progress }}%"></span>
+                </div>
+                <div class="signal-roadmap__lane-footer">
+                  <span>{{ lane.stage }}</span>
+                  <small>{{ lane.detail }}</small>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
   <section class="group-signal-watch" aria-labelledby="group-signal-watch-title">
     <div class="group-signal-watch__header">
       <div>
