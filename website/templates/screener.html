@@ -115,6 +115,7 @@
                 status: 'Preset cleared'
             }
         };
+        let savedViewStorageKey = 'demark-screener-saved-views';
 
         function signalValue(row, field) {
             let value = parseFloat(row[field]);
@@ -806,6 +807,105 @@
                 updateSignalSummary();
             }
 
+            function loadSavedViews() {
+                try {
+                    let savedViews = JSON.parse(localStorage.getItem(savedViewStorageKey) || '[]');
+                    return Array.isArray(savedViews) ? savedViews : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            function persistSavedViews(savedViews) {
+                try {
+                    localStorage.setItem(savedViewStorageKey, JSON.stringify(savedViews));
+                    return true;
+                } catch (error) {
+                    $('#saved-view-status').text('Saved views are unavailable in this browser');
+                    return false;
+                }
+            }
+
+            function applySavedView(view) {
+                $('#signal-direction').val(view.direction || 'all');
+                $('#minimum-signal').val(view.minimumCount || '0');
+                $('#signal-family').val(view.family || 'all');
+                $('#myInput').val(view.search || '');
+                $('#toggle-buy-columns').prop('checked', Boolean(view.hideBuy)).trigger('change');
+                $('#toggle-sell-columns').prop('checked', Boolean(view.hideSell)).trigger('change');
+                $('#preset-status').text('Saved view: ' + view.name);
+                $('#saved-view-status').text(view.name + ' applied');
+                table.column(2).search(view.search || '').draw();
+            }
+
+            function renderSavedViews() {
+                let savedViews = loadSavedViews();
+                let $grid = $('#saved-view-grid');
+
+                $grid.empty();
+                $('#saved-view-caption').text(
+                    savedViews.length
+                        ? savedViews.length + ' saved view' + (savedViews.length === 1 ? '' : 's')
+                        : 'Save a filter and column layout for quick reuse'
+                );
+
+                savedViews.forEach(function (view) {
+                    let $card = $('<article>').addClass('saved-view-card');
+                    let $details = $('<button>')
+                        .attr('type', 'button')
+                        .attr('data-saved-view-id', view.id)
+                        .addClass('saved-view-apply');
+
+                    $('<strong>').text(view.name).appendTo($details);
+                    $('<span>')
+                        .text(
+                            (view.direction || 'all') + ' / ' +
+                            (view.family || 'all') + ' / min ' +
+                            (view.minimumCount || '0') +
+                            (view.search ? ' / ' + view.search : '')
+                        )
+                        .appendTo($details);
+                    $details.appendTo($card);
+
+                    $('<button>')
+                        .attr('type', 'button')
+                        .attr('aria-label', 'Delete ' + view.name)
+                        .attr('data-delete-saved-view-id', view.id)
+                        .addClass('saved-view-delete')
+                        .text('Delete')
+                        .appendTo($card);
+                    $card.appendTo($grid);
+                });
+            }
+
+            function saveCurrentView() {
+                let name = $('#saved-view-name').val().trim();
+
+                if (!name) {
+                    $('#saved-view-status').text('Name this view before saving');
+                    return;
+                }
+
+                let savedViews = loadSavedViews();
+                savedViews.unshift({
+                    id: Date.now().toString(),
+                    name: name,
+                    direction: $('#signal-direction').val(),
+                    minimumCount: $('#minimum-signal').val(),
+                    family: $('#signal-family').val(),
+                    search: $('#myInput').val().trim(),
+                    hideBuy: $('#toggle-buy-columns').is(':checked'),
+                    hideSell: $('#toggle-sell-columns').is(':checked')
+                });
+                savedViews = savedViews.slice(0, 8);
+
+                if (persistSavedViews(savedViews)) {
+                    $('#saved-view-name').val('');
+                    $('#saved-view-status').text(name + ' saved');
+                    renderSavedViews();
+                }
+            }
+
             $('#toggle-buy-columns').on('change', function () {
                 let isVisible = !$(this).is(':checked');
 
@@ -836,6 +936,34 @@
                 applySignalPreset($(this).data('preset'));
             });
 
+            $('#saved-view-form').on('submit', function (event) {
+                event.preventDefault();
+                saveCurrentView();
+            });
+
+            $('#saved-view-grid').on('click', '[data-saved-view-id]', function () {
+                let viewId = String($(this).data('saved-view-id'));
+                let view = loadSavedViews().find(function (savedView) {
+                    return String(savedView.id) === viewId;
+                });
+
+                if (view) {
+                    applySavedView(view);
+                }
+            });
+
+            $('#saved-view-grid').on('click', '[data-delete-saved-view-id]', function () {
+                let viewId = String($(this).data('delete-saved-view-id'));
+                let savedViews = loadSavedViews().filter(function (savedView) {
+                    return String(savedView.id) !== viewId;
+                });
+
+                if (persistSavedViews(savedViews)) {
+                    $('#saved-view-status').text('Saved view deleted');
+                    renderSavedViews();
+                }
+            });
+
             $('#signal-family-matrix-grid').on('click', '.signal-family-matrix-cell', function () {
                 let family = $(this).data('family');
                 let direction = $(this).data('direction');
@@ -853,6 +981,7 @@
             });
 
             updateSignalSummary();
+            renderSavedViews();
 
         });
 
@@ -964,6 +1093,22 @@
             <button class="signal-preset-button" data-preset="bothSides" type="button">Both Sides</button>
             <button class="signal-preset-button signal-preset-button--muted" data-preset="reset" type="button">Reset</button>
         </div>
+    </div>
+
+    <div class="saved-view-panel">
+        <div class="saved-view-header">
+            <div>
+                <h2>Saved Screener Views</h2>
+                <span id="saved-view-caption">Save a filter and column layout for quick reuse</span>
+            </div>
+            <form id="saved-view-form" class="saved-view-form">
+                <label for="saved-view-name">View name</label>
+                <input id="saved-view-name" maxlength="40" placeholder="Weekly buy setup" type="text">
+                <button type="submit">Save Current View</button>
+            </form>
+        </div>
+        <span id="saved-view-status" class="saved-view-status" aria-live="polite"></span>
+        <div id="saved-view-grid" class="saved-view-grid"></div>
     </div>
 
     <div class="signal-stage-panel">

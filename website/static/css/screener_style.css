@@ -989,6 +989,116 @@ input[type=submit] {
     font-size: 1rem;
 }
 
+.saved-view-panel{
+    background: linear-gradient(135deg, rgba(20, 27, 39, .98), rgba(34, 35, 45, .98));
+    border: 1px solid rgba(255, 196, 94, .3);
+    border-radius: 18px;
+    color: whitesmoke;
+    margin: 1rem 2rem;
+    padding: 1rem;
+}
+
+.saved-view-header{
+    align-items: flex-end;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.saved-view-header h2{
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.saved-view-header span,
+.saved-view-status{
+    color: #aeb7c6;
+    font-size: .85rem;
+}
+
+.saved-view-form{
+    align-items: flex-end;
+    display: flex;
+    gap: .5rem;
+}
+
+.saved-view-form label{
+    color: #dce6f2;
+    font-size: .78rem;
+}
+
+.saved-view-form input,
+.saved-view-form button{
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 8px;
+    min-height: 38px;
+    padding: .45rem .7rem;
+}
+
+.saved-view-form input{
+    background: rgba(255, 255, 255, .08);
+    color: white;
+}
+
+.saved-view-form button{
+    background: #f4b94f;
+    color: #1b2230;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.saved-view-status{
+    display: block;
+    min-height: 1.4rem;
+    padding-top: .5rem;
+}
+
+.saved-view-grid{
+    display: grid;
+    gap: .6rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.saved-view-card{
+    align-items: stretch;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 10px;
+    display: flex;
+    overflow: hidden;
+}
+
+.saved-view-apply,
+.saved-view-delete{
+    background: transparent;
+    border: 0;
+    color: white;
+    cursor: pointer;
+}
+
+.saved-view-apply{
+    align-items: flex-start;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: .2rem;
+    padding: .7rem;
+    text-align: left;
+}
+
+.saved-view-apply span{
+    color: #aeb7c6;
+    font-size: .75rem;
+    text-transform: capitalize;
+}
+
+.saved-view-delete{
+    border-left: 1px solid rgba(255, 255, 255, .1);
+    color: #ff9ba4;
+    font-size: .75rem;
+    padding: .6rem;
+}
+
 @media (max-width: 900px) {
     .signal-summary{
         grid-template-columns: repeat(2, minmax(120px, 1fr));
@@ -1039,5 +1149,15 @@ input[type=submit] {
 
     .signal-family-matrix-panel{
         margin: 1rem;
+    }
+
+    .saved-view-panel{
+        margin: 1rem;
+    }
+
+    .saved-view-header,
+    .saved-view-form{
+        align-items: stretch;
+        flex-direction: column;
     }
 }
