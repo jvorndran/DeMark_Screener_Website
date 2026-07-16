@@ -253,6 +253,77 @@ def build_group_signal_watch(counts, limit=5):
     }
 
 
+def build_holdings_concentration(holding_info, tick):
+    holdings = holding_info.get(tick, {}).get('holdings', []) if holding_info else []
+    weighted_holdings = []
+
+    for holding in holdings or []:
+        try:
+            weight = float(holding.get('holdingPercent') or 0)
+        except (TypeError, ValueError):
+            continue
+
+        if weight <= 0:
+            continue
+
+        weighted_holdings.append({
+            'symbol': holding.get('symbol') or 'N/A',
+            'name': holding.get('holdingName') or holding.get('symbol') or 'Unknown holding',
+            'weight': weight
+        })
+
+    weighted_holdings.sort(key=lambda holding: holding['weight'], reverse=True)
+
+    if not weighted_holdings:
+        return {
+            'available': False,
+            'holding_count': 0,
+            'classification': 'Unavailable',
+            'detail': 'No weighted holdings were reported for this fund.',
+            'top_holding': None,
+            'runner_up': None,
+            'leader_gap': 0,
+            'buckets': []
+        }
+
+    def concentration(count):
+        return min(sum(holding['weight'] for holding in weighted_holdings[:count]), 1)
+
+    top_three = concentration(3)
+    top_five = concentration(5)
+    top_ten = concentration(10)
+
+    if top_ten >= 0.5:
+        classification = 'Concentrated'
+        detail = 'The ten largest positions account for at least half of reported exposure.'
+    elif top_ten >= 0.35:
+        classification = 'Focused'
+        detail = 'The largest positions drive a meaningful share of reported exposure.'
+    else:
+        classification = 'Broadly spread'
+        detail = 'Reported exposure is distributed beyond the ten largest positions.'
+
+    top_holding = weighted_holdings[0]
+    runner_up = weighted_holdings[1] if len(weighted_holdings) > 1 else None
+    leader_gap = top_holding['weight'] - runner_up['weight'] if runner_up else top_holding['weight']
+
+    return {
+        'available': True,
+        'holding_count': len(weighted_holdings),
+        'classification': classification,
+        'detail': detail,
+        'top_holding': top_holding,
+        'runner_up': runner_up,
+        'leader_gap': leader_gap,
+        'buckets': [
+            {'label': 'Top 3', 'weight': top_three, 'detail': 'Largest three positions'},
+            {'label': 'Top 5', 'weight': top_five, 'detail': 'Largest five positions'},
+            {'label': 'Top 10', 'weight': top_ten, 'detail': 'Largest ten positions'},
+            {'label': 'Beyond Top 10', 'weight': max(1 - top_ten, 0), 'detail': 'Remaining portfolio exposure'}
+        ]
+    }
+
+
 @app.route('/screener/<tick>')
 def stock_details(tick):
 
@@ -347,6 +418,8 @@ def etf_details(tick):
     if holdings:
         top_holding = holdings[0]
 
+    holdings_concentration = build_holdings_concentration(holding_info, tick)
+
     etf_snapshot = {
         'expense_ratio': profile.get(tick, {}).get('feesExpensesInvestment', {}).get('annualReportExpenseRatio'),
         'net_assets': profile.get(tick, {}).get('feesExpensesInvestment', {}).get('totalNetAssets'),
@@ -369,7 +442,8 @@ def etf_details(tick):
                            sector_weights=sector_weights,
                            quote=quote, summary=summary,
                            performance=performance,
-                           etf_snapshot=etf_snapshot
+                           etf_snapshot=etf_snapshot,
+                           holdings_concentration=holdings_concentration
                            )
 
 

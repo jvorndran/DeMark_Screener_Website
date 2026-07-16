@@ -84,14 +84,98 @@
             display: block;
             font-size: 13px;
         }
+        .holdings-concentration {
+            background: #ffffff;
+            border: 1px solid #d7dde8;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 18px;
+        }
+        .holdings-concentration-header {
+            align-items: center;
+            display: flex;
+            gap: 16px;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .holdings-concentration-header h2 {
+            color: #242424;
+            font-size: 21px;
+            margin: 0 0 4px;
+        }
+        .holdings-concentration-header p,
+        .holdings-concentration-empty {
+            color: #626D71;
+            margin: 0;
+        }
+        .holdings-concentration-badge {
+            background: #e8edf5;
+            border-radius: 999px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 7px 11px;
+            white-space: nowrap;
+        }
+        .holdings-concentration-grid {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .holdings-concentration-card {
+            background: #f7f9fc;
+            border: 1px solid #dce2ea;
+            border-radius: 7px;
+            padding: 12px;
+        }
+        .holdings-concentration-card span,
+        .holdings-concentration-card small {
+            color: #626D71;
+            display: block;
+        }
+        .holdings-concentration-card span {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .holdings-concentration-card strong {
+            color: #242424;
+            display: block;
+            font-size: 23px;
+            margin: 5px 0;
+        }
+        .holdings-concentration-track {
+            background: #dfe5ed;
+            border-radius: 999px;
+            height: 7px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        .holdings-concentration-track span {
+            background: linear-gradient(90deg, #5876a6, #222f49);
+            display: block;
+            height: 100%;
+        }
+        .holdings-concentration-note {
+            border-top: 1px solid #dce2ea;
+            color: #596273;
+            margin: 14px 0 0;
+            padding-top: 12px;
+        }
         @media (max-width: 950px) {
-            .etf-snapshot {
+            .etf-snapshot,
+            .holdings-concentration-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
         @media (max-width: 560px) {
-            .etf-snapshot {
+            .etf-snapshot,
+            .holdings-concentration-grid {
                 grid-template-columns: 1fr;
+            }
+            .holdings-concentration-header {
+                align-items: flex-start;
+                flex-direction: column;
             }
         }
 
@@ -292,6 +376,44 @@
                 </small>
             </div>
         </div>
+
+        <section class="holdings-concentration">
+            <div class="holdings-concentration-header">
+                <div>
+                    <h2>Holdings Concentration</h2>
+                    <p>{{ holdings_concentration.detail }}</p>
+                </div>
+                <span class="holdings-concentration-badge">
+                    {{ holdings_concentration.classification }}
+                </span>
+            </div>
+
+            {% if holdings_concentration.available %}
+                <div class="holdings-concentration-grid">
+                    {% for bucket in holdings_concentration.buckets %}
+                        <article class="holdings-concentration-card">
+                            <span>{{ bucket.label }}</span>
+                            <strong>{{ (bucket.weight * 100)|round(1) }}%</strong>
+                            <div class="holdings-concentration-track" aria-hidden="true">
+                                <span style="width: {{ (bucket.weight * 100)|round(1) }}%"></span>
+                            </div>
+                            <small>{{ bucket.detail }}</small>
+                        </article>
+                    {% endfor %}
+                </div>
+                <p class="holdings-concentration-note">
+                    {{ holdings_concentration.holding_count }} weighted holdings reported.
+                    {{ holdings_concentration.top_holding.symbol }} is the largest at
+                    {{ (holdings_concentration.top_holding.weight * 100)|round(1) }}%.
+                    {% if holdings_concentration.runner_up %}
+                        It leads {{ holdings_concentration.runner_up.symbol }} by
+                        {{ (holdings_concentration.leader_gap * 100)|round(1) }} percentage points.
+                    {% endif %}
+                </p>
+            {% else %}
+                <p class="holdings-concentration-empty">Concentration metrics will appear when holding weights are available.</p>
+            {% endif %}
+        </section>
 
       <div class="well">
           <h4>About</h4>
