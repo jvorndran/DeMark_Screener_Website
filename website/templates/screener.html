@@ -789,6 +789,77 @@
                     });
             }
 
+            function isValidSelectValue(selector, value) {
+                return $(selector).find('option').filter(function () {
+                    return $(this).val() === value;
+                }).length > 0;
+            }
+
+            function buildSharedViewUrl() {
+                let params = new URLSearchParams();
+                let groupSearch = $('#myInput').val().trim();
+
+                params.set('direction', $('#signal-direction').val());
+                params.set('minimum', $('#minimum-signal').val());
+                params.set('family', $('#signal-family').val());
+                params.set('buy', $('#toggle-buy-columns').is(':checked') ? '0' : '1');
+                params.set('sell', $('#toggle-sell-columns').is(':checked') ? '0' : '1');
+
+                if (groupSearch) {
+                    params.set('group', groupSearch);
+                }
+
+                return window.location.origin + window.location.pathname + '?' + params.toString();
+            }
+
+            function copySharedViewUrl() {
+                let sharedUrl = buildSharedViewUrl();
+
+                copyTextToClipboard(sharedUrl)
+                    .then(function () {
+                        window.history.replaceState({}, '', sharedUrl);
+                        $('#export-status').text('Shareable view link copied');
+                    })
+                    .catch(function () {
+                        $('#export-status').text('Unable to copy view link');
+                    });
+            }
+
+            function applySharedViewFromUrl() {
+                let params = new URLSearchParams(window.location.search);
+                let supportedParams = ['direction', 'minimum', 'family', 'group', 'buy', 'sell'];
+                let hasSharedView = supportedParams.some(function (param) {
+                    return params.has(param);
+                });
+
+                if (!hasSharedView) {
+                    return false;
+                }
+
+                let direction = params.get('direction');
+                let minimum = params.get('minimum');
+                let family = params.get('family');
+                let groupSearch = params.get('group') || '';
+
+                if (isValidSelectValue('#signal-direction', direction)) {
+                    $('#signal-direction').val(direction);
+                }
+                if (isValidSelectValue('#minimum-signal', minimum)) {
+                    $('#minimum-signal').val(minimum);
+                }
+                if (isValidSelectValue('#signal-family', family)) {
+                    $('#signal-family').val(family);
+                }
+
+                $('#myInput').val(groupSearch);
+                $('#toggle-buy-columns').prop('checked', params.get('buy') === '0').trigger('change');
+                $('#toggle-sell-columns').prop('checked', params.get('sell') !== '1').trigger('change');
+                $('#preset-status').text('Shared screener view applied');
+                table.column(2).search(groupSearch).draw();
+
+                return true;
+            }
+
             function applySignalPreset(presetKey) {
                 let preset = signalPresets[presetKey];
 
@@ -931,6 +1002,7 @@
 
             $('#export-filtered-results').on('click', exportFilteredRows);
             $('#copy-filtered-tickers').on('click', copyFilteredTickers);
+            $('#copy-shared-view').on('click', copySharedViewUrl);
 
             $('.signal-preset-button').on('click', function () {
                 applySignalPreset($(this).data('preset'));
@@ -980,7 +1052,9 @@
                 table.column(2).search(this.value).draw();
             });
 
-            updateSignalSummary();
+            if (!applySharedViewFromUrl()) {
+                updateSignalSummary();
+            }
             renderSavedViews();
 
         });
@@ -1037,6 +1111,7 @@
                     <div class="export-actions">
                         <button id="export-filtered-results" type="button">Export CSV</button>
                         <button id="copy-filtered-tickers" type="button">Copy Tickers</button>
+                        <button id="copy-shared-view" type="button">Share View</button>
                     </div>
                     <span id="export-status"></span>
                 </div>
