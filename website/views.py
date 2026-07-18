@@ -1,6 +1,6 @@
 import pandas as pd
 from website import app
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, jsonify, request
 from website.models import Counts
 import re
 import yfinance as yf
@@ -9,42 +9,130 @@ import json
 from yahooquery import Ticker
 
 
+BUY_SIGNAL_FIELDS = ['seq_buy_d', 'combo_buy_d', 'seq_buy_w', 'combo_buy_w', 'seq_b_9139', 'combo_b_9139']
+SELL_SIGNAL_FIELDS = ['seq_sell_d', 'combo_sell_d', 'seq_sell_w', 'combo_sell_w', 'seq_s_9139', 'combo_s_9139']
+SIGNAL_FAMILIES = {
+    'all': BUY_SIGNAL_FIELDS + SELL_SIGNAL_FIELDS,
+    'daily': ['seq_buy_d', 'combo_buy_d', 'seq_sell_d', 'combo_sell_d'],
+    'weekly': ['seq_buy_w', 'combo_buy_w', 'seq_sell_w', 'combo_sell_w'],
+    'sequential': ['seq_buy_d', 'seq_buy_w', 'seq_b_9139', 'seq_sell_d', 'seq_sell_w', 'seq_s_9139'],
+    'combo': ['combo_buy_d', 'combo_buy_w', 'combo_b_9139', 'combo_sell_d', 'combo_sell_w', 'combo_s_9139'],
+    'nine-thirteen-nine': ['seq_b_9139', 'combo_b_9139', 'seq_s_9139', 'combo_s_9139']
+}
+
+
+def serialize_count(item):
+    converted_name = re.sub(r"(?<!\b)\w", lambda match: match.group().lower(), item.name_of_company)
+
+    return {
+        'name': converted_name.replace('\\', ' '),
+        'tick': item.ticker,
+        'etf': item.etf,
+        'seq_buy_d': item.seq_buy_count_daily,
+        'seq_sell_d': item.seq_sell_count_daily,
+        'seq_buy_w': item.seq_buy_count_weekly,
+        'seq_sell_w': item.seq_sell_count_weekly,
+        'seq_b_9139': item.seq_buy_9_13_9,
+        'seq_s_9139': item.seq_sell_9_13_9,
+        'combo_buy_d': item.combo_buy_count_daily,
+        'combo_sell_d': item.combo_sell_count_daily,
+        'combo_buy_w': item.combo_buy_count_weekly,
+        'combo_sell_w': item.combo_sell_count_weekly,
+        'combo_b_9139': item.combo_buy_9_13_9,
+        'combo_s_9139': item.combo_sell_9_13_9
+    }
+
+
+def build_signal_feed(rows, direction='all', family='all', minimum=0, group=''):
+    family_fields = SIGNAL_FAMILIES[family]
+    buy_fields = [field for field in BUY_SIGNAL_FIELDS if field in family_fields]
+    sell_fields = [field for field in SELL_SIGNAL_FIELDS if field in family_fields]
+    threshold = 0 if minimum == 0 and direction == 'all' and family == 'all' else max(minimum, 1)
+    normalized_group = group.strip().lower()
+    matches = []
+
+    def strongest_signal(row, fields):
+        field = max(fields, key=lambda candidate: int(row.get(candidate) or 0))
+        return {'field': field, 'count': int(row.get(field) or 0)}
+
+    for row in rows:
+        if normalized_group and normalized_group not in str(row.get('etf') or '').lower():
+            continue
+
+        strongest_buy = strongest_signal(row, buy_fields)
+        strongest_sell = strongest_signal(row, sell_fields)
+        buy_strength = strongest_buy['count']
+        sell_strength = strongest_sell['count']
+
+        if direction == 'buy':
+            signal_match = buy_strength >= threshold
+        elif direction == 'sell':
+            signal_match = sell_strength >= threshold
+        elif direction == 'both':
+            signal_match = buy_strength >= threshold and sell_strength >= threshold
+        else:
+            signal_match = threshold == 0 or buy_strength >= threshold or sell_strength >= threshold
+
+        if not signal_match:
+            continue
+
+        enriched_row = dict(row)
+        enriched_row.update({
+            'buy_strength': buy_strength,
+            'sell_strength': sell_strength,
+            'strongest_buy': strongest_buy,
+            'strongest_sell': strongest_sell,
+            'strength': max(buy_strength, sell_strength),
+            'bias': 'buy' if buy_strength > sell_strength else 'sell' if sell_strength > buy_strength else 'balanced'
+        })
+        matches.append(enriched_row)
+
+    return sorted(
+        matches,
+        key=lambda row: (-row['strength'], -(row['buy_strength'] + row['sell_strength']), row['tick'])
+    )
+
+
 @app.route('/')
 def screener():
-
-    data = Counts.query.all()
-
-    counts_data = []
-
-    for item in data:
-
-        #Makes sure only first letter of word is uppercase in company name
-        converted_name = re.sub(r"(?<!\b)\w", lambda x: x.group().lower(), item.name_of_company)
-
-        #Replaces escape characters
-        converted_name = converted_name.replace('\\', ' ')
-
-        #Makes count dict for each count
-        count = {
-            'name': converted_name,
-            'tick': item.ticker,
-            'etf': item.etf,
-            'seq_buy_d': item.seq_buy_count_daily,
-            'seq_sell_d': item.seq_sell_count_daily,
-            'seq_buy_w': item.seq_buy_count_weekly,
-            'seq_sell_w': item.seq_sell_count_weekly,
-            'seq_b_9139': item.seq_buy_9_13_9,
-            'seq_s_9139': item.seq_sell_9_13_9,
-            'combo_buy_d': item.combo_buy_count_daily,
-            'combo_sell_d': item.combo_sell_count_daily,
-            'combo_buy_w': item.combo_buy_count_weekly,
-            'combo_sell_w': item.combo_sell_count_weekly,
-            'combo_b_9139': item.combo_buy_9_13_9,
-            'combo_s_9139': item.combo_sell_9_13_9
-        }
-        counts_data.append(count)
+    counts_data = [serialize_count(item) for item in Counts.query.all()]
 
     return render_template('screener.html', counts=counts_data)
+
+
+@app.route('/api/signals')
+def signal_feed():
+    direction = request.args.get('direction', 'all').lower()
+    family = request.args.get('family', 'all').lower()
+    group = request.args.get('group', '')
+
+    if direction not in {'all', 'buy', 'sell', 'both'}:
+        return jsonify({'error': 'direction must be all, buy, sell, or both'}), 400
+
+    if family not in SIGNAL_FAMILIES:
+        return jsonify({'error': 'unknown signal family'}), 400
+
+    try:
+        minimum = max(int(request.args.get('minimum', 0)), 0)
+        limit = min(max(int(request.args.get('limit', 50)), 1), 250)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'minimum and limit must be whole numbers'}), 400
+
+    rows = [serialize_count(item) for item in Counts.query.all()]
+    matches = build_signal_feed(rows, direction, family, minimum, group)
+
+    return jsonify({
+        'count': min(len(matches), limit),
+        'total': len(matches),
+        'filters': {
+            'direction': direction,
+            'family': family,
+            'minimum': minimum,
+            'group': group,
+            'limit': limit
+        },
+        'signals': matches[:limit]
+    })
 
 
 def get_stock_details(tick):
