@@ -117,6 +117,22 @@
         };
         let savedViewStorageKey = 'demark-screener-saved-views';
 
+        function signalBias(row) {
+            let buyStrength = maxSignalCount(row, buyFields);
+            let sellStrength = maxSignalCount(row, sellFields);
+
+            if (buyStrength > sellStrength) {
+                return {label: 'Buy leaning', tone: 'buy'};
+            }
+            if (sellStrength > buyStrength) {
+                return {label: 'Sell leaning', tone: 'sell'};
+            }
+            if (buyStrength > 0) {
+                return {label: 'Balanced pressure', tone: 'balanced'};
+            }
+            return {label: 'No active setup', tone: 'inactive'};
+        }
+
         function signalValue(row, field) {
             let value = parseFloat(row[field]);
             return Number.isNaN(value) ? 0 : value;
@@ -731,6 +747,126 @@
                 updateSignalFamilyMatrix(filteredRows, minimumCount);
             }
 
+            function populateSignalComparisonOptions() {
+                let sortedRows = count_data.slice().sort(function (firstRow, secondRow) {
+                    return firstRow.tick.localeCompare(secondRow.tick);
+                });
+
+                ['#signal-compare-first', '#signal-compare-second'].forEach(function (selector) {
+                    let $select = $(selector);
+
+                    sortedRows.forEach(function (row) {
+                        $('<option>')
+                            .attr('value', row.tick)
+                            .text(row.tick + ' - ' + row.name)
+                            .appendTo($select);
+                    });
+                });
+            }
+
+            function buildSignalComparisonProfile(row) {
+                let strongestBuy = strongestSignal(row, buyFields);
+                let strongestSell = strongestSignal(row, sellFields);
+                let bias = signalBias(row);
+                let $card = $('<article>').addClass('signal-comparison-profile');
+                let $header = $('<div>').addClass('signal-comparison-profile__header');
+                let $identity = $('<div>');
+                let $link = $('<a>')
+                    .attr('href', '/screener/' + encodeURIComponent(row.tick))
+                    .attr('target', '_blank')
+                    .attr('rel', 'noopener')
+                    .text(row.tick);
+
+                $link.appendTo($identity);
+                $('<span>').text(row.name + ' / ' + row.etf).appendTo($identity);
+                $identity.appendTo($header);
+                $('<strong>')
+                    .addClass('signal-comparison-bias signal-comparison-bias--' + bias.tone)
+                    .text(bias.label)
+                    .appendTo($header);
+                $header.appendTo($card);
+
+                let $metrics = $('<div>').addClass('signal-comparison-profile__metrics');
+                $('<span>')
+                    .append($('<small>').text('Strongest buy'))
+                    .append($('<strong>').text(strongestBuy.label + ' / ' + formatSignalCount(strongestBuy.count)))
+                    .appendTo($metrics);
+                $('<span>')
+                    .append($('<small>').text('Strongest sell'))
+                    .append($('<strong>').text(strongestSell.label + ' / ' + formatSignalCount(strongestSell.count)))
+                    .appendTo($metrics);
+                $metrics.appendTo($card);
+
+                return $card;
+            }
+
+            function renderSignalComparison() {
+                let firstTicker = $('#signal-compare-first').val();
+                let secondTicker = $('#signal-compare-second').val();
+                let $results = $('#signal-comparison-results');
+                let $status = $('#signal-comparison-status');
+
+                $results.empty();
+
+                if (!firstTicker || !secondTicker) {
+                    $status.text('Choose two tickers to compare all twelve DeMark counts.');
+                    $('<p>')
+                        .addClass('signal-comparison-empty')
+                        .text('The comparison will highlight directional bias, leading signals, and count-by-count differences.')
+                        .appendTo($results);
+                    return;
+                }
+
+                if (firstTicker === secondTicker) {
+                    $status.text('Choose two different tickers.');
+                    $('<p>').addClass('signal-comparison-empty').text('A ticker cannot be compared with itself.').appendTo($results);
+                    return;
+                }
+
+                let firstRow = count_data.find(function (row) { return row.tick === firstTicker; });
+                let secondRow = count_data.find(function (row) { return row.tick === secondTicker; });
+
+                if (!firstRow || !secondRow) {
+                    $status.text('One of the selected tickers is no longer available.');
+                    return;
+                }
+
+                $status.text(firstTicker + ' versus ' + secondTicker + ' across daily, weekly, and 9-13-9 signals.');
+
+                let $profiles = $('<div>').addClass('signal-comparison-profiles');
+                buildSignalComparisonProfile(firstRow).appendTo($profiles);
+                buildSignalComparisonProfile(secondRow).appendTo($profiles);
+                $profiles.appendTo($results);
+
+                let $matrix = $('<div>').addClass('signal-comparison-matrix');
+                let $matrixHeader = $('<div>').addClass('signal-comparison-matrix__row signal-comparison-matrix__header');
+                $('<strong>').text('Signal').appendTo($matrixHeader);
+                $('<strong>').text(firstTicker).appendTo($matrixHeader);
+                $('<strong>').text(secondTicker).appendTo($matrixHeader);
+                $('<strong>').text('Lead').appendTo($matrixHeader);
+                $matrixHeader.appendTo($matrix);
+
+                buyFields.concat(sellFields).forEach(function (field) {
+                    let firstValue = signalValue(firstRow, field);
+                    let secondValue = signalValue(secondRow, field);
+                    let leader = firstValue > secondValue
+                        ? firstTicker + ' +' + formatSignalCount(firstValue - secondValue)
+                        : secondValue > firstValue
+                            ? secondTicker + ' +' + formatSignalCount(secondValue - firstValue)
+                            : 'Tied';
+                    let direction = buyFields.indexOf(field) !== -1 ? 'buy' : 'sell';
+                    let $row = $('<div>').addClass('signal-comparison-matrix__row signal-comparison-matrix__row--' + direction);
+
+                    $('<span>').text(signalLabels[field]).appendTo($row);
+                    $('<strong>').text(formatSignalCount(firstValue)).appendTo($row);
+                    $('<strong>').text(formatSignalCount(secondValue)).appendTo($row);
+                    $('<small>').text(leader).appendTo($row);
+                    $row.appendTo($matrix);
+                });
+
+                $matrix.appendTo($results);
+            }
+
             function exportFilteredRows() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
@@ -1004,6 +1140,12 @@
             $('#copy-filtered-tickers').on('click', copyFilteredTickers);
             $('#copy-shared-view').on('click', copySharedViewUrl);
 
+            $('#signal-compare-first, #signal-compare-second').on('change', renderSignalComparison);
+            $('#signal-compare-clear').on('click', function () {
+                $('#signal-compare-first, #signal-compare-second').val('');
+                renderSignalComparison();
+            });
+
             $('.signal-preset-button').on('click', function () {
                 applySignalPreset($(this).data('preset'));
             });
@@ -1056,6 +1198,8 @@
                 updateSignalSummary();
             }
             renderSavedViews();
+            populateSignalComparisonOptions();
+            renderSignalComparison();
 
         });
 
@@ -1184,6 +1328,27 @@
         </div>
         <span id="saved-view-status" class="saved-view-status" aria-live="polite"></span>
         <div id="saved-view-grid" class="saved-view-grid"></div>
+    </div>
+
+    <div class="signal-comparison-panel">
+        <div class="signal-comparison-header">
+            <div>
+                <h2>Signal Comparison</h2>
+                <span id="signal-comparison-status" aria-live="polite">Choose two tickers to compare all twelve DeMark counts.</span>
+            </div>
+            <div class="signal-comparison-controls">
+                <label for="signal-compare-first">First ticker</label>
+                <select id="signal-compare-first">
+                    <option value="">Choose a ticker</option>
+                </select>
+                <label for="signal-compare-second">Second ticker</label>
+                <select id="signal-compare-second">
+                    <option value="">Choose a ticker</option>
+                </select>
+                <button id="signal-compare-clear" type="button">Clear</button>
+            </div>
+        </div>
+        <div id="signal-comparison-results"></div>
     </div>
 
     <div class="signal-stage-panel">

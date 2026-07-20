@@ -1099,6 +1099,155 @@ input[type=submit] {
     padding: .6rem;
 }
 
+.signal-comparison-panel{
+    background: linear-gradient(135deg, rgba(17, 28, 43, .98), rgba(28, 39, 57, .98));
+    border: 1px solid rgba(81, 166, 255, .35);
+    border-radius: 18px;
+    color: whitesmoke;
+    margin: 1rem 2rem;
+    padding: 1rem;
+}
+
+.signal-comparison-header{
+    align-items: flex-end;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.signal-comparison-header h2{
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.signal-comparison-header span{
+    color: #aebdd1;
+    font-size: .85rem;
+}
+
+.signal-comparison-controls{
+    align-items: flex-end;
+    display: grid;
+    gap: .45rem;
+    grid-template-columns: auto minmax(170px, 1fr) auto minmax(170px, 1fr) auto;
+}
+
+.signal-comparison-controls label{
+    color: #dce6f2;
+    font-size: .75rem;
+}
+
+.signal-comparison-controls select,
+.signal-comparison-controls button{
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 8px;
+    min-height: 38px;
+    padding: .45rem .65rem;
+}
+
+.signal-comparison-controls select{
+    background: #182437;
+    color: white;
+}
+
+.signal-comparison-controls button{
+    background: transparent;
+    color: #9fcaff;
+    cursor: pointer;
+}
+
+.signal-comparison-empty{
+    color: #aebdd1;
+    margin: .9rem 0 0;
+}
+
+.signal-comparison-profiles{
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 1rem;
+}
+
+.signal-comparison-profile{
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .11);
+    border-radius: 12px;
+    padding: .8rem;
+}
+
+.signal-comparison-profile__header{
+    align-items: flex-start;
+    display: flex;
+    gap: .75rem;
+    justify-content: space-between;
+}
+
+.signal-comparison-profile__header div,
+.signal-comparison-profile__metrics span{
+    display: grid;
+}
+
+.signal-comparison-profile__header a{
+    color: #80bdff;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.signal-comparison-profile__header span,
+.signal-comparison-profile__metrics small{
+    color: #aebdd1;
+    font-size: .75rem;
+}
+
+.signal-comparison-bias{
+    border-radius: 999px;
+    font-size: .72rem;
+    padding: .3rem .55rem;
+}
+
+.signal-comparison-bias--buy{ background: rgba(44, 184, 111, .22); color: #83e9af; }
+.signal-comparison-bias--sell{ background: rgba(215, 61, 74, .22); color: #ff9ba4; }
+.signal-comparison-bias--balanced{ background: rgba(255, 196, 94, .2); color: #ffd58a; }
+.signal-comparison-bias--inactive{ background: rgba(174, 189, 209, .13); color: #c5d0df; }
+
+.signal-comparison-profile__metrics{
+    display: grid;
+    gap: .6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: .8rem;
+}
+
+.signal-comparison-profile__metrics strong{
+    font-size: .82rem;
+}
+
+.signal-comparison-matrix{
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 12px;
+    margin-top: .75rem;
+    overflow: hidden;
+}
+
+.signal-comparison-matrix__row{
+    align-items: center;
+    display: grid;
+    gap: .65rem;
+    grid-template-columns: minmax(180px, 1.4fr) repeat(2, minmax(60px, .45fr)) minmax(105px, .65fr);
+    padding: .55rem .75rem;
+}
+
+.signal-comparison-matrix__row + .signal-comparison-matrix__row{
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.signal-comparison-matrix__header{
+    background: rgba(255, 255, 255, .09);
+}
+
+.signal-comparison-matrix__row--buy{ border-left: 3px solid rgba(44, 184, 111, .75); }
+.signal-comparison-matrix__row--sell{ border-left: 3px solid rgba(215, 61, 74, .75); }
+.signal-comparison-matrix__row small{ color: #aebdd1; }
+
 @media (max-width: 900px) {
     .signal-summary{
         grid-template-columns: repeat(2, minmax(120px, 1fr));
@@ -1159,5 +1308,31 @@ input[type=submit] {
     .saved-view-form{
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .signal-comparison-panel{
+        margin: 1rem;
+    }
+
+    .signal-comparison-header{
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .signal-comparison-controls{
+        align-items: stretch;
+        grid-template-columns: 1fr;
+    }
+
+    .signal-comparison-profiles{
+        grid-template-columns: 1fr;
+    }
+
+    .signal-comparison-matrix{
+        overflow-x: auto;
+    }
+
+    .signal-comparison-matrix__row{
+        min-width: 560px;
     }
 }
