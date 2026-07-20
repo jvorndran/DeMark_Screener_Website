@@ -1099,6 +1099,188 @@ input[type=submit] {
     padding: .6rem;
 }
 
+.signal-watch-rule-panel{
+    background: linear-gradient(135deg, rgba(16, 36, 38, .98), rgba(28, 45, 48, .98));
+    border: 1px solid rgba(82, 210, 180, .35);
+    border-radius: 18px;
+    color: whitesmoke;
+    margin: 1rem 2rem;
+    padding: 1rem;
+}
+
+.signal-watch-rule-header{
+    align-items: flex-end;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.signal-watch-rule-header h2{
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.signal-watch-rule-header > div > span,
+.signal-watch-rule-status{
+    color: #a9c7c3;
+    font-size: .85rem;
+}
+
+.signal-watch-rule-form{
+    align-items: flex-end;
+    display: grid;
+    gap: .45rem;
+    grid-template-columns: minmax(150px, 1.2fr) repeat(3, minmax(105px, .75fr)) minmax(130px, 1fr) auto;
+}
+
+.signal-watch-rule-form label{
+    display: grid;
+    gap: .2rem;
+}
+
+.signal-watch-rule-form label span{
+    color: #d9eeeb;
+    font-size: .72rem;
+}
+
+.signal-watch-rule-form input,
+.signal-watch-rule-form select,
+.signal-watch-rule-form button{
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 8px;
+    min-height: 38px;
+    padding: .45rem .6rem;
+}
+
+.signal-watch-rule-form input,
+.signal-watch-rule-form select{
+    background: rgba(255, 255, 255, .08);
+    color: white;
+}
+
+.signal-watch-rule-form select option{
+    background: #1c3032;
+}
+
+.signal-watch-rule-form button{
+    background: #53d0b4;
+    color: #102a2a;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.signal-watch-rule-status{
+    display: block;
+    min-height: 1.4rem;
+    padding-top: .5rem;
+}
+
+.signal-watch-rule-grid{
+    display: grid;
+    gap: .7rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.signal-watch-rule-card,
+.signal-watch-rule-empty{
+    background: rgba(255, 255, 255, .055);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 12px;
+}
+
+.signal-watch-rule-empty{
+    color: #a9c7c3;
+    margin: 0;
+    padding: .85rem;
+}
+
+.signal-watch-rule-card{
+    display: grid;
+    gap: .7rem;
+    overflow: hidden;
+    padding: .8rem;
+}
+
+.signal-watch-rule-card__header{
+    align-items: flex-start;
+    display: flex;
+    gap: .75rem;
+    justify-content: space-between;
+}
+
+.signal-watch-rule-card__header div{
+    display: grid;
+    gap: .15rem;
+}
+
+.signal-watch-rule-card__header span{
+    color: #a9c7c3;
+    font-size: .72rem;
+    text-transform: capitalize;
+}
+
+.signal-watch-rule-card__header button{
+    background: transparent;
+    border: 0;
+    color: #ff9ba4;
+    cursor: pointer;
+    font-size: .72rem;
+}
+
+.signal-watch-rule-card__summary{
+    align-items: baseline;
+    display: flex;
+    gap: .45rem;
+}
+
+.signal-watch-rule-card__summary strong{
+    color: #75e2c8;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.signal-watch-rule-card__summary span{
+    color: #c7d8d6;
+    font-size: .78rem;
+}
+
+.signal-watch-rule-card__leaders{
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    min-height: 29px;
+}
+
+.signal-watch-rule-card__leaders a{
+    align-items: center;
+    background: rgba(82, 210, 180, .12);
+    border: 1px solid rgba(82, 210, 180, .2);
+    border-radius: 999px;
+    color: #dffbf5;
+    display: flex;
+    font-size: .75rem;
+    gap: .4rem;
+    padding: .3rem .5rem;
+}
+
+.signal-watch-rule-card__leaders a span{
+    color: #75e2c8;
+}
+
+.signal-watch-rule-card__leaders > span{
+    color: #a9c7c3;
+    font-size: .75rem;
+}
+
+.signal-watch-rule-card__apply{
+    background: rgba(82, 210, 180, .14);
+    border: 1px solid rgba(82, 210, 180, .32);
+    border-radius: 8px;
+    color: #9ff0dc;
+    cursor: pointer;
+    min-height: 36px;
+}
+
 .signal-comparison-panel{
     background: linear-gradient(135deg, rgba(17, 28, 43, .98), rgba(28, 39, 57, .98));
     border: 1px solid rgba(81, 166, 255, .35);
@@ -1261,6 +1443,15 @@ input[type=submit] {
     .signal-family-matrix-row{
         grid-template-columns: minmax(90px, .7fr) repeat(2, minmax(110px, 1fr));
     }
+
+    .signal-watch-rule-header{
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .signal-watch-rule-form{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 600px) {
@@ -1308,6 +1499,19 @@ input[type=submit] {
     .saved-view-form{
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .signal-watch-rule-panel{
+        margin: 1rem;
+    }
+
+    .signal-watch-rule-header{
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .signal-watch-rule-form{
+        grid-template-columns: 1fr;
     }
 
     .signal-comparison-panel{

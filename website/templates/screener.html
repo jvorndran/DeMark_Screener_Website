@@ -116,6 +116,7 @@
             }
         };
         let savedViewStorageKey = 'demark-screener-saved-views';
+        let signalWatchRuleStorageKey = 'demark-screener-watch-rules';
 
         function signalBias(row) {
             let buyStrength = maxSignalCount(row, buyFields);
@@ -1113,6 +1114,171 @@
                 }
             }
 
+            function loadSignalWatchRules() {
+                try {
+                    let rules = JSON.parse(localStorage.getItem(signalWatchRuleStorageKey) || '[]');
+                    return Array.isArray(rules) ? rules : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            function persistSignalWatchRules(rules) {
+                try {
+                    localStorage.setItem(signalWatchRuleStorageKey, JSON.stringify(rules));
+                    return true;
+                } catch (error) {
+                    $('#signal-watch-rule-status').text('Watch rules are unavailable in this browser');
+                    return false;
+                }
+            }
+
+            function getSignalWatchRuleMatches(rule) {
+                let minimumCount = parseInt(rule.minimumCount, 10);
+                minimumCount = [8, 9, 12, 13].indexOf(minimumCount) !== -1 ? minimumCount : 8;
+                let direction = ['buy', 'sell', 'both'].indexOf(rule.direction) !== -1 ? rule.direction : 'buy';
+                let family = signalFamilies[rule.family] ? rule.family : 'all';
+                let groupSearch = (rule.search || '').toLowerCase();
+                let familyFields = signalFieldsForFamily(family);
+                let buyRuleFields = intersectSignalFields(buyFields, familyFields);
+                let sellRuleFields = intersectSignalFields(sellFields, familyFields);
+
+                return count_data.filter(function (row) {
+                    let groupName = (row.etf || '').toLowerCase();
+                    return (!groupSearch || groupName.indexOf(groupSearch) !== -1) &&
+                        rowMatchesSignalFilter(row, minimumCount, direction, family);
+                }).map(function (row) {
+                    let buyStrength = maxSignalCount(row, buyRuleFields);
+                    let sellStrength = maxSignalCount(row, sellRuleFields);
+                    let score = direction === 'buy'
+                        ? buyStrength
+                        : direction === 'sell'
+                            ? sellStrength
+                            : Math.min(buyStrength, sellStrength);
+
+                    return {row: row, score: score};
+                }).sort(function (firstMatch, secondMatch) {
+                    return secondMatch.score - firstMatch.score ||
+                        String(firstMatch.row.tick || '').localeCompare(String(secondMatch.row.tick || ''));
+                });
+            }
+
+            function applySignalWatchRule(rule) {
+                let direction = ['buy', 'sell', 'both'].indexOf(rule.direction) !== -1 ? rule.direction : 'buy';
+                let family = signalFamilies[rule.family] ? rule.family : 'all';
+                let minimumCount = ['8', '9', '12', '13'].indexOf(String(rule.minimumCount)) !== -1
+                    ? String(rule.minimumCount)
+                    : '8';
+
+                $('#signal-direction').val(direction);
+                $('#minimum-signal').val(minimumCount);
+                $('#signal-family').val(family);
+                $('#myInput').val(rule.search || '');
+                $('#toggle-buy-columns').prop('checked', direction === 'sell').trigger('change');
+                $('#toggle-sell-columns').prop('checked', direction === 'buy').trigger('change');
+                $('#preset-status').text('Watch rule: ' + rule.name);
+                $('#signal-watch-rule-status').text(rule.name + ' applied to the screener');
+                table.column(2).search(rule.search || '').draw();
+            }
+
+            function renderSignalWatchRules() {
+                let rules = loadSignalWatchRules();
+                let $grid = $('#signal-watch-rule-grid');
+
+                $grid.empty();
+                $('#signal-watch-rule-caption').text(
+                    rules.length
+                        ? rules.length + ' active watch rule' + (rules.length === 1 ? '' : 's')
+                        : 'Create reusable rules that scan the full signal dataset'
+                );
+
+                if (!rules.length) {
+                    $('<p>')
+                        .addClass('signal-watch-rule-empty')
+                        .text('No watch rules yet. Save criteria such as weekly buys at count 12+ or completed sell signals in a sector.')
+                        .appendTo($grid);
+                    return;
+                }
+
+                rules.forEach(function (rule) {
+                    let matches = getSignalWatchRuleMatches(rule);
+                    let $card = $('<article>').addClass('signal-watch-rule-card');
+                    let $header = $('<div>').addClass('signal-watch-rule-card__header');
+                    let $identity = $('<div>');
+
+                    $('<strong>').text(rule.name).appendTo($identity);
+                    $('<span>')
+                        .text(
+                            rule.direction + ' / ' + rule.family + ' / count ' + rule.minimumCount + '+' +
+                            (rule.search ? ' / ' + rule.search : '')
+                        )
+                        .appendTo($identity);
+                    $identity.appendTo($header);
+                    $('<button>')
+                        .attr('aria-label', 'Delete ' + rule.name)
+                        .attr('data-delete-signal-watch-rule-id', rule.id)
+                        .attr('type', 'button')
+                        .text('Delete')
+                        .appendTo($header);
+                    $header.appendTo($card);
+
+                    let $matchSummary = $('<div>').addClass('signal-watch-rule-card__summary');
+                    $('<strong>').text(matches.length.toLocaleString()).appendTo($matchSummary);
+                    $('<span>').text('matching symbol' + (matches.length === 1 ? '' : 's')).appendTo($matchSummary);
+                    $matchSummary.appendTo($card);
+
+                    let $leaders = $('<div>').addClass('signal-watch-rule-card__leaders');
+                    if (matches.length) {
+                        matches.slice(0, 3).forEach(function (match) {
+                            let $leader = $('<a>')
+                                .attr('href', '/screener/' + encodeURIComponent(match.row.tick))
+                                .attr('target', '_blank')
+                                .attr('rel', 'noopener');
+                            $('<strong>').text(match.row.tick).appendTo($leader);
+                            $('<span>').text(formatSignalCount(match.score)).appendTo($leader);
+                            $leader.appendTo($leaders);
+                        });
+                    } else {
+                        $('<span>').text('No symbols currently meet this rule.').appendTo($leaders);
+                    }
+                    $leaders.appendTo($card);
+
+                    $('<button>')
+                        .attr('data-apply-signal-watch-rule-id', rule.id)
+                        .attr('type', 'button')
+                        .addClass('signal-watch-rule-card__apply')
+                        .text('Open ' + matches.length.toLocaleString() + ' matches')
+                        .appendTo($card);
+                    $card.appendTo($grid);
+                });
+            }
+
+            function saveSignalWatchRule() {
+                let name = $('#signal-watch-rule-name').val().trim();
+
+                if (!name) {
+                    $('#signal-watch-rule-status').text('Name this watch rule before saving');
+                    return;
+                }
+
+                let rules = loadSignalWatchRules();
+                rules.unshift({
+                    id: Date.now().toString(),
+                    name: name,
+                    direction: $('#signal-watch-rule-direction').val(),
+                    minimumCount: $('#signal-watch-rule-minimum').val(),
+                    family: $('#signal-watch-rule-family').val(),
+                    search: $('#signal-watch-rule-group').val().trim()
+                });
+                rules = rules.slice(0, 8);
+
+                if (persistSignalWatchRules(rules)) {
+                    $('#signal-watch-rule-name, #signal-watch-rule-group').val('');
+                    $('#signal-watch-rule-status').text(name + ' is now scanning the screener');
+                    renderSignalWatchRules();
+                }
+            }
+
             $('#toggle-buy-columns').on('change', function () {
                 let isVisible = !$(this).is(':checked');
 
@@ -1178,6 +1344,34 @@
                 }
             });
 
+            $('#signal-watch-rule-form').on('submit', function (event) {
+                event.preventDefault();
+                saveSignalWatchRule();
+            });
+
+            $('#signal-watch-rule-grid').on('click', '[data-apply-signal-watch-rule-id]', function () {
+                let ruleId = String($(this).data('apply-signal-watch-rule-id'));
+                let rule = loadSignalWatchRules().find(function (savedRule) {
+                    return String(savedRule.id) === ruleId;
+                });
+
+                if (rule) {
+                    applySignalWatchRule(rule);
+                }
+            });
+
+            $('#signal-watch-rule-grid').on('click', '[data-delete-signal-watch-rule-id]', function () {
+                let ruleId = String($(this).data('delete-signal-watch-rule-id'));
+                let rules = loadSignalWatchRules().filter(function (savedRule) {
+                    return String(savedRule.id) !== ruleId;
+                });
+
+                if (persistSignalWatchRules(rules)) {
+                    $('#signal-watch-rule-status').text('Watch rule deleted');
+                    renderSignalWatchRules();
+                }
+            });
+
             $('#signal-family-matrix-grid').on('click', '.signal-family-matrix-cell', function () {
                 let family = $(this).data('family');
                 let direction = $(this).data('direction');
@@ -1198,6 +1392,7 @@
                 updateSignalSummary();
             }
             renderSavedViews();
+            renderSignalWatchRules();
             populateSignalComparisonOptions();
             renderSignalComparison();
 
@@ -1328,6 +1523,56 @@
         </div>
         <span id="saved-view-status" class="saved-view-status" aria-live="polite"></span>
         <div id="saved-view-grid" class="saved-view-grid"></div>
+    </div>
+
+    <div class="signal-watch-rule-panel">
+        <div class="signal-watch-rule-header">
+            <div>
+                <h2>Signal Watch Rules</h2>
+                <span id="signal-watch-rule-caption">Create reusable rules that scan the full signal dataset</span>
+            </div>
+            <form id="signal-watch-rule-form" class="signal-watch-rule-form">
+                <label>
+                    <span>Rule name</span>
+                    <input id="signal-watch-rule-name" maxlength="40" placeholder="Weekly buy countdowns" type="text">
+                </label>
+                <label>
+                    <span>Direction</span>
+                    <select id="signal-watch-rule-direction">
+                        <option value="buy">Buy</option>
+                        <option value="sell">Sell</option>
+                        <option value="both">Buy And Sell</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Minimum</span>
+                    <select id="signal-watch-rule-minimum">
+                        <option value="8">8+</option>
+                        <option value="9">9+</option>
+                        <option value="12">12+</option>
+                        <option value="13">13+</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Family</span>
+                    <select id="signal-watch-rule-family">
+                        <option value="all">All</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="sequential">Sequential</option>
+                        <option value="combo">Combo</option>
+                        <option value="nine-thirteen-nine">9-13-9</option>
+                    </select>
+                </label>
+                <label>
+                    <span>Sector / country</span>
+                    <input id="signal-watch-rule-group" maxlength="50" placeholder="Optional" type="text">
+                </label>
+                <button type="submit">Save Rule</button>
+            </form>
+        </div>
+        <span id="signal-watch-rule-status" class="signal-watch-rule-status" aria-live="polite"></span>
+        <div id="signal-watch-rule-grid" class="signal-watch-rule-grid"></div>
     </div>
 
     <div class="signal-comparison-panel">
