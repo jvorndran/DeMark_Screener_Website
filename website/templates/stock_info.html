@@ -158,6 +158,36 @@
     </div>
   </section>
 
+  <section class="signal-alignment" aria-labelledby="signal-alignment-title">
+    <div class="signal-alignment__header">
+      <div>
+        <h2 id="signal-alignment-title">Timeframe Alignment</h2>
+        <p>Compare the strongest Sequential or Combo count on the daily and weekly views.</p>
+      </div>
+      <span class="signal-alignment__status signal-alignment__status--{{ timeframe_alignment.status.tone }}">
+        {{ timeframe_alignment.status.label }}
+      </span>
+    </div>
+
+    <div class="signal-alignment__grid">
+      {% for timeframe in timeframe_alignment.timeframes %}
+        <article class="signal-alignment-card signal-alignment-card--{{ timeframe.direction }}">
+          <div class="signal-alignment-card__title">
+            <span>{{ timeframe.label }}</span>
+            <strong>{{ timeframe.direction_label }}</strong>
+          </div>
+          <div class="signal-alignment-card__metrics">
+            <span>Buy <strong>{{ timeframe.buy_strength }}</strong></span>
+            <span>Sell <strong>{{ timeframe.sell_strength }}</strong></span>
+            <span>Spread <strong>{{ timeframe.spread }}</strong></span>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <p class="signal-alignment__detail">{{ timeframe_alignment.status.detail }}</p>
+  </section>
+
   <section class="signal-roadmap" aria-labelledby="signal-roadmap-title">
     <div class="signal-roadmap__header">
       <div>

@@ -270,6 +270,89 @@ def build_signal_completion_roadmap(counts):
     }
 
 
+def build_timeframe_alignment(counts):
+    timeframe_values = [
+        (
+            'daily',
+            'Daily',
+            max(int(counts.seq_buy_count_daily or 0), int(counts.combo_buy_count_daily or 0)),
+            max(int(counts.seq_sell_count_daily or 0), int(counts.combo_sell_count_daily or 0))
+        ),
+        (
+            'weekly',
+            'Weekly',
+            max(int(counts.seq_buy_count_weekly or 0), int(counts.combo_buy_count_weekly or 0)),
+            max(int(counts.seq_sell_count_weekly or 0), int(counts.combo_sell_count_weekly or 0))
+        )
+    ]
+    timeframes = []
+
+    for key, label, buy_strength, sell_strength in timeframe_values:
+        if buy_strength > sell_strength:
+            direction = 'buy'
+            direction_label = 'Buy leaning'
+        elif sell_strength > buy_strength:
+            direction = 'sell'
+            direction_label = 'Sell leaning'
+        elif max(buy_strength, sell_strength) > 0:
+            direction = 'balanced'
+            direction_label = 'Balanced'
+        else:
+            direction = 'inactive'
+            direction_label = 'Inactive'
+
+        timeframes.append({
+            'key': key,
+            'label': label,
+            'buy_strength': buy_strength,
+            'sell_strength': sell_strength,
+            'direction': direction,
+            'direction_label': direction_label,
+            'spread': abs(buy_strength - sell_strength)
+        })
+
+    daily, weekly = timeframes
+    directional_timeframes = [
+        timeframe for timeframe in timeframes
+        if timeframe['direction'] in {'buy', 'sell'}
+    ]
+
+    if daily['direction'] == weekly['direction'] and daily['direction'] in {'buy', 'sell'}:
+        direction_label = daily['direction'].title()
+        status = {
+            'label': f'{direction_label} confirmed',
+            'tone': daily['direction'],
+            'detail': f'Daily and weekly counts both favor the {daily["direction"]} side.'
+        }
+    elif {daily['direction'], weekly['direction']} == {'buy', 'sell'}:
+        status = {
+            'label': 'Timeframes conflict',
+            'tone': 'conflict',
+            'detail': 'Daily and weekly counts point in opposite directions; confirmation is absent.'
+        }
+    elif len(directional_timeframes) == 1:
+        active_timeframe = directional_timeframes[0]
+        status = {
+            'label': 'Partial confirmation',
+            'tone': 'partial',
+            'detail': f'{active_timeframe["label"]} counts favor {active_timeframe["direction"]}; the other timeframe is not directional.'
+        }
+    elif any(timeframe['direction'] != 'inactive' for timeframe in timeframes):
+        status = {
+            'label': 'Balanced pressure',
+            'tone': 'balanced',
+            'detail': 'Buy and sell strength is tied across the active timeframe view.'
+        }
+    else:
+        status = {
+            'label': 'No active alignment',
+            'tone': 'inactive',
+            'detail': 'Daily and weekly Sequential and Combo counts are inactive.'
+        }
+
+    return {'status': status, 'timeframes': timeframes}
+
+
 def build_group_signal_watch(counts, limit=5):
     peers = Counts.query.filter(
         Counts.etf == counts.etf,
@@ -431,6 +514,7 @@ def stock_details(tick):
 
         signal_snapshot = build_signal_snapshot(row)
         signal_completion_roadmap = build_signal_completion_roadmap(row)
+        timeframe_alignment = build_timeframe_alignment(row)
         group_signal_watch = build_group_signal_watch(row)
 
         price = price.reset_index()
@@ -449,6 +533,7 @@ def stock_details(tick):
                                demark_counts=row, news=json_news, major_holders=major_holders,
                                company_site=company_site, signal_snapshot=signal_snapshot,
                                signal_completion_roadmap=signal_completion_roadmap,
+                               timeframe_alignment=timeframe_alignment,
                                group_signal_watch=group_signal_watch)
 
 
