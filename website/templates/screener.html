@@ -464,6 +464,39 @@
             };
         }
 
+        function buildSignalConflictRadar(rows, minimumCount, family) {
+            let threshold = Math.max(minimumCount, 1);
+            let familyFields = signalFieldsForFamily(family);
+            let conflictBuyFields = intersectSignalFields(buyFields, familyFields);
+            let conflictSellFields = intersectSignalFields(sellFields, familyFields);
+
+            return rows.map(function (row) {
+                let buyCount = maxSignalCount(row, conflictBuyFields);
+                let sellCount = maxSignalCount(row, conflictSellFields);
+                let spread = buyCount - sellCount;
+
+                return {
+                    name: row.name,
+                    ticker: row.tick,
+                    group: row.etf,
+                    buyCount: buyCount,
+                    sellCount: sellCount,
+                    pressure: buyCount + sellCount,
+                    tilt: Math.abs(spread) <= 1 ? 'Balanced' : spread > 0 ? 'Buy tilted' : 'Sell tilted',
+                    tiltClass: Math.abs(spread) <= 1 ? 'balanced' : spread > 0 ? 'buy' : 'sell'
+                };
+            }).filter(function (row) {
+                return row.buyCount >= threshold && row.sellCount >= threshold;
+            }).sort(function (a, b) {
+                if (b.pressure !== a.pressure) {
+                    return b.pressure - a.pressure;
+                }
+
+                return Math.abs(a.buyCount - a.sellCount) - Math.abs(b.buyCount - b.sellCount) ||
+                    a.ticker.localeCompare(b.ticker);
+            }).slice(0, 8);
+        }
+
         $(document).ready(function () {
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                 if (settings.nTable.id !== 'demark-table') {
@@ -720,6 +753,60 @@
                 });
             }
 
+            function updateSignalConflictRadar(rows, minimumCount, family) {
+                let conflicts = buildSignalConflictRadar(rows, minimumCount, family);
+                let $grid = $('#signal-conflict-grid');
+
+                $grid.empty();
+                $('#signal-conflict-caption').text(
+                    conflicts.length
+                        ? 'Top ' + conflicts.length + ' names with active buy and sell pressure'
+                        : 'No two-sided pressure at the active threshold'
+                );
+
+                if (!conflicts.length) {
+                    $('<div>')
+                        .addClass('signal-conflict-empty')
+                        .text('No filtered ticker has qualifying buy and sell counts in this signal family.')
+                        .appendTo($grid);
+                    return;
+                }
+
+                conflicts.forEach(function (row) {
+                    let maximum = Math.max(row.buyCount, row.sellCount, 1);
+                    let $card = $('<article>').addClass('signal-conflict-card');
+                    let $header = $('<div>').addClass('signal-conflict-card-header');
+                    let $identity = $('<div>');
+                    let $link = $('<a>')
+                        .attr('href', '/screener/' + encodeURIComponent(row.ticker))
+                        .attr('target', '_blank')
+                        .attr('rel', 'noopener')
+                        .text(row.ticker);
+
+                    $link.appendTo($identity);
+                    $('<span>').text(row.name).appendTo($identity);
+                    $identity.appendTo($header);
+                    $('<em>').addClass('signal-conflict-tilt signal-conflict-tilt--' + row.tiltClass).text(row.tilt).appendTo($header);
+                    $header.appendTo($card);
+
+                    $('<small>').addClass('signal-conflict-group').text(row.group || 'Unclassified').appendTo($card);
+
+                    let $buyRow = $('<div>').addClass('signal-conflict-pressure');
+                    $('<span>').text('Buy').appendTo($buyRow);
+                    $('<i>').append($('<b>').addClass('signal-conflict-fill--buy').css('width', Math.round((row.buyCount / maximum) * 100) + '%')).appendTo($buyRow);
+                    $('<strong>').text(formatSignalCount(row.buyCount)).appendTo($buyRow);
+                    $buyRow.appendTo($card);
+
+                    let $sellRow = $('<div>').addClass('signal-conflict-pressure');
+                    $('<span>').text('Sell').appendTo($sellRow);
+                    $('<i>').append($('<b>').addClass('signal-conflict-fill--sell').css('width', Math.round((row.sellCount / maximum) * 100) + '%')).appendTo($sellRow);
+                    $('<strong>').text(formatSignalCount(row.sellCount)).appendTo($sellRow);
+                    $sellRow.appendTo($card);
+
+                    $card.appendTo($grid);
+                });
+            }
+
             function updateSignalSummary() {
                 let minimumCount = parseInt($('#minimum-signal').val(), 10);
                 let direction = $('#signal-direction').val();
@@ -746,6 +833,7 @@
                 updateGroupSignalSummary(filteredRows, minimumCount, family);
                 updateSignalStageSummary(filteredRows, family);
                 updateSignalFamilyMatrix(filteredRows, minimumCount);
+                updateSignalConflictRadar(filteredRows, minimumCount, family);
             }
 
             function populateSignalComparisonOptions() {
@@ -1615,6 +1703,17 @@
             <span>Sell signals</span>
         </div>
         <div id="signal-family-matrix-grid" class="signal-family-matrix-grid"></div>
+    </div>
+
+    <div class="signal-conflict-panel">
+        <div class="signal-conflict-header">
+            <div>
+                <h2>Signal Conflict Radar</h2>
+                <span id="signal-conflict-caption">Two-sided pressure across the filtered table</span>
+            </div>
+            <strong>Buy + sell signals</strong>
+        </div>
+        <div id="signal-conflict-grid" class="signal-conflict-grid"></div>
     </div>
 
     <div class="shortlist-panel">
